@@ -31,4 +31,9 @@ class Employee extends Model
     {
         return $this->hasMany(ReminderLog::class);
     }
+
+    public function guest_books()
+    {
+        return $this->belongsToMany(GuestBook::class, 'employee_guest_books');
+    }
 }

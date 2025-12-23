@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostWbbmController;
 use App\Http\Controllers\GetWbbmController;
 use App\Models\Categories;
+use App\Http\Controllers\GuestBookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,3 +59,13 @@ Route::get('/kategori/{id}/progress', function ($id) {
         'progress' => $kategori->progress()
     ]);
 });
+
+//route buku tamu
+Route::get('/guest_book/index', [GuestBookController::class, 'index'])->name('guest_book_index');
+Route::get('/guest_book/create', [GuestBookController::class, 'create'])->name('guest_book_create');
+Route::post('/guest_book', [GuestBookController::class, 'store'])->name('guest_book_store');
+Route::get('/guest_book/{id}/edit', [GuestBookController::class, 'edit'])->name('guest_book_edit');
+Route::put('/guest_book/{id}', [GuestBookController::class, 'update'])->name('guest_book_update');
+Route::delete('/guest_book/{id}', [GuestBookController::class, 'destroy'])->name('guest_book_destroy');
+Route::get('/guest-book/print/pdf', [GuestBookController::class, 'printPdf'])
+    ->name('guest_book_print_pdf');
