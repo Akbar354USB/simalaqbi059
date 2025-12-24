@@ -3,11 +3,10 @@
 @section('content')
     <div class="container-fluid">
         <div class="card shadow-sm">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-primary">Edit Data Pegawai</h5>
+            </div>
             <div class="card-body">
-
-                <h4 class="text-primary mb-4">
-                    <strong>Edit Pegawai</strong>
-                </h4>
 
                 <form action="{{ route('employees.update', $employee->id) }}" method="POST">
                     @csrf
@@ -15,8 +14,8 @@
 
                     <div class="form-group mb-3">
                         <label class="form-label">Nama Pegawai</label>
-                        <input type="text" name="employee_name" class="form-control" value="{{ $employee->employee_name }}"
-                            required>
+                        <input type="text" name="employee_name" class="form-control"
+                            value="{{ $employee->employee_name }}" required>
                     </div>
 
                     <div class="form-group mb-3">

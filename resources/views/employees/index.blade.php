@@ -3,18 +3,14 @@
 @section('content')
     <div class="container-fluid">
         <div class="card shadow-sm">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-primary">Data Pegawai</h5>
+            </div>
+
             <div class="card-body">
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="text-primary mb-0">
-                        <strong>Data Pegawai</strong>
-                    </h4>
-
-                    <a href="{{ route('employees.create') }}" class="btn btn-primary">
-                        + Tambah Data Pegawai
-                    </a>
-                </div>
-
+                <a href="{{ route('employees.create') }}" class="btn btn-primary mb-2">
+                    + Tambah Data Pegawai
+                </a>
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}

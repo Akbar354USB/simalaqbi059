@@ -8,6 +8,7 @@ use App\Http\Controllers\GetWbbmController;
 use App\Models\Categories;
 use App\Http\Controllers\GuestBookController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\GoogleAccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,3 +80,7 @@ Route::post('/employees', [EmployeeController::class, 'store'])->name('employees
 Route::get('/employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
 Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
 Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+
+//data google Account
+Route::get('/google-accounts', [GoogleAccountController::class, 'index'])->name('google-accounts.index');
+Route::delete('/google-accounts/{googleAccount}', [GoogleAccountController::class, 'destroy'])->name('google-accounts.destroy');

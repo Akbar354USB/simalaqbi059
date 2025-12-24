@@ -15,8 +15,9 @@
 
                 <a href="{{ route('guest_book_create') }}" class="btn btn-primary mb-3">+ Tambah Tamu</a>
 
-                <a href="{{ route('guest_book_print_pdf', request()->query()) }}" class="btn btn-danger mb-3" target="_blank">
-                    Print PDF
+                <a href="{{ route('guest_book_print_pdf', request()->query()) }}" class="btn btn-success mb-3"
+                    target="_blank">
+                    <i class="fas fa-file-pdf"></i> Print PDF
                 </a>
 
 
@@ -55,8 +56,9 @@
                     <div class="form-row mt-3">
 
                         <div class="col-md-12">
-                            <button class="btn btn-primary">Filter</button>
-                            <a href="{{ route('guest_book_index') }}" class="btn btn-secondary">Reset</a>
+                            <button class="btn btn-primary"><small><i class="fas fa-filter"></i></small> Filter</button>
+                            <a href="{{ route('guest_book_index') }}" class="btn btn-secondary"><small><i
+                                        class="fas fa-sync-alt"></i></small> Reset</a>
                         </div>
 
                     </div>
@@ -93,20 +95,20 @@
                                         <span class="badge badge-info">{{ $emp->employee_name }}</span>
                                     @endforeach
                                 </td>
-
-                                <td>
-                                    <a href="{{ route('guest_book_edit', $g->id) }}"
-                                        class="btn btn-sm btn-warning">Edit</a>
+                                <td class="text-center">
+                                    <a href="{{ route('guest_book_edit', $g->id) }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
 
                                     <form action="{{ route('guest_book_destroy', $g->id) }}" method="POST"
                                         style="display:inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus?')">
-                                            Hapus
+                                        <button class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
-
                                 </td>
                             </tr>
                         @endforeach

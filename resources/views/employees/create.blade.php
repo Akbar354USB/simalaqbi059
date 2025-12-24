@@ -3,12 +3,10 @@
 @section('content')
     <div class="container-fluid">
         <div class="card shadow-sm">
+            <div class="card-header py-3">
+                <h5 class="m-0 font-weight-bold text-primary">Tambah Pegawai</h5>
+            </div>
             <div class="card-body">
-
-                <h4 class="text-primary mb-4">
-                    <strong>Tambah Pegawai</strong>
-                </h4>
-
                 <form action="{{ route('employees.store') }}" method="POST">
                     @csrf
 
