@@ -32,6 +32,7 @@ class UserSeeder extends Seeder
 
         User::create([
             'employee_id' => $employee->id,
+            'role' => "superadmin",
             'password'    => Hash::make('password123'),
         ]);
 

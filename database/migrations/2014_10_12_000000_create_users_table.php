@@ -17,6 +17,7 @@ return new class extends Migration
                 ->constrained('employees')
                 ->cascadeOnDelete();
             $table->string('password');
+            $table->string('role');
             $table->rememberToken();
             $table->timestamps();
         });
