@@ -11,6 +11,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\GoogleAccountController;
 use App\Http\Controllers\WorkScheduleController;
 use App\Http\Controllers\ReminderLogController;
+use App\Http\Controllers\UserController;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -103,4 +104,11 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     Route::delete('/reminder-logs/truncate', [ReminderLogController::class, 'truncate'])->name('reminder-logs.truncate');
     Route::get('/reminder-logs', [ReminderLogController::class, 'index'])->name('reminder-logs.index');
     Route::delete('/reminder-logs/{reminderLog}', [ReminderLogController::class, 'destroy'])->name('reminder-logs.destroy');
+
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 });

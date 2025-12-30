@@ -26,6 +26,7 @@
                     <h6 class="collapse-header">Daftar Data</h6>
                     <a class="collapse-item" href="{{ route('employees.index') }}">Data Pegawai</a>
                     <a class="collapse-item" href="#">Data Satker</a>
+                    <a class="collapse-item" href="{{ route('users.index') }}">Manajemen User</a>
                 </div>
             </div>
         </li>

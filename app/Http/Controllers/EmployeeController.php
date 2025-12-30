@@ -26,6 +26,8 @@ class EmployeeController extends Controller
             'status' => 'required|in:PNS,PPNPN',
         ]);
 
+        // dd($request);
+
         Employee::create([
             'employee_name' => $request->employee_name,
             'email' => $request->email,
