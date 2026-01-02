@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Categories;
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\GoogleAccount;
 use App\Models\GuestBook;
 
 class HomeController extends Controller
@@ -28,7 +29,11 @@ class HomeController extends Controller
     {
         $totalPegawai = Employee::count();
         $totalTamu = GuestBook::count();
+        $googleaccount = GoogleAccount::count();
         $overallProgress = Categories::overallProgress();
-        return view('dashboard',  compact('totalPegawai', 'totalTamu', 'overallProgress'));
+        $categories = Categories::with([
+            'sub_categories.items.item_documents.upload' // perbaiki uploads → upload
+        ])->get();
+        return view('dashboard',  compact('totalPegawai', 'totalTamu', 'overallProgress', 'googleaccount', 'categories'));
     }
 }
