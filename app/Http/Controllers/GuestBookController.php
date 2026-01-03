@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agency;
 use App\Models\Employee;
 use App\Models\GuestBook;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -10,20 +11,12 @@ use Illuminate\Http\Request;
 
 class GuestBookController extends Controller
 {
-    // ============================
-    // TAMPILKAN DAFTAR BUKU TAMU
-    // ============================
-    // public function index()
-    // {
-    //     $guestBooks = GuestBook::with('employees')->latest()->get();
-
-    //     return view('admin.guest_book.index', compact('guestBooks'));
-    // }
-
     public function index(Request $request)
     {
         // Mulai query
-        $query = GuestBook::with('employees');
+        // $query = GuestBook::with('employees');
+        // Mulai query + eager loading
+        $query = GuestBook::with(['employees', 'agency']);
 
         // 🔹 Filter berdasarkan tanggal tertentu
         if ($request->date) {
@@ -59,7 +52,8 @@ class GuestBookController extends Controller
     public function create()
     {
         $employees = Employee::all();
-        return view('admin.guest_book.create', compact('employees'));
+        $agency = Agency::all();
+        return view('admin.guest_book.create', compact('employees', 'agency'));
     }
 
     // ============================
@@ -70,7 +64,7 @@ class GuestBookController extends Controller
         $request->validate([
             'guest_name'    => 'required',
             'number_phone'  => 'required',
-            'agency'        => 'required',
+            'agency_id'        => 'required',
             'objective'     => 'required',
             'employee_ids'  => 'required|array',
         ]);
@@ -78,9 +72,9 @@ class GuestBookController extends Controller
         $guest = GuestBook::create([
             'guest_name'   => $request->guest_name,
             'number_phone' => $request->number_phone,
-            'agency'       => $request->agency,
             'objective'    => $request->objective,
             'arrival_time'    => $request->arrival_time,
+            'agency_id'    => $request->agency_id,
         ]);
 
         // Simpan relasi pegawai
@@ -92,7 +86,8 @@ class GuestBookController extends Controller
 
     public function printPdf(Request $request)
     {
-        $guestBooks = GuestBook::with('employees')->latest();
+        $guestBooks = GuestBook::with(['employees', 'agency'])->latest();
+
         \Carbon\Carbon::setLocale('id'); // ⬅ penting
         // ==============================
         // KETERANGAN WAKTU UNTUK VIEW
@@ -164,8 +159,9 @@ class GuestBookController extends Controller
     {
         $guest = GuestBook::findOrFail($id);
         $employees = Employee::all();
+        $agency = Agency::all();
 
-        return view('admin.guest_book.edit', compact('guest', 'employees'));
+        return view('admin.guest_book.edit', compact('guest', 'employees', 'agency'));
     }
 
     // ============================
@@ -176,7 +172,7 @@ class GuestBookController extends Controller
         $request->validate([
             'guest_name'    => 'required',
             'number_phone'  => 'required',
-            'agency'        => 'required',
+            'agency_id'        => 'required',
             'objective'     => 'required',
             'employee_ids'  => 'required|array',
         ]);
@@ -186,7 +182,7 @@ class GuestBookController extends Controller
         $guest->update([
             'guest_name'   => $request->guest_name,
             'number_phone' => $request->number_phone,
-            'agency'       => $request->agency,
+            'agency_id'       => $request->agency_id,
             'objective'    => $request->objective,
         ]);
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Agency;
 use App\Models\Categories;
 use Illuminate\Http\Request;
 use App\Models\Employee;
@@ -31,9 +32,10 @@ class HomeController extends Controller
         $totalTamu = GuestBook::count();
         $googleaccount = GoogleAccount::count();
         $overallProgress = Categories::overallProgress();
+        $satker = Agency::count();
         $categories = Categories::with([
             'sub_categories.items.item_documents.upload' // perbaiki uploads → upload
         ])->get();
-        return view('dashboard',  compact('totalPegawai', 'totalTamu', 'overallProgress', 'googleaccount', 'categories'));
+        return view('dashboard',  compact('totalPegawai', 'totalTamu', 'overallProgress', 'googleaccount', 'categories', 'satker'));
     }
 }

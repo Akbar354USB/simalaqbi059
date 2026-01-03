@@ -13,6 +13,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\WorkScheduleController;
 use App\Http\Controllers\ReminderLogController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AgencyController;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -116,4 +117,12 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    //satker 
+    Route::get('/agencies', [AgencyController::class, 'index'])->name('agencies.index');
+    Route::get('/agencies/create', [AgencyController::class, 'create'])->name('agencies.create');
+    Route::post('/agencies', [AgencyController::class, 'store'])->name('agencies.store');
+    Route::get('/agencies/{agency}/edit', [AgencyController::class, 'edit'])->name('agencies.edit');
+    Route::put('/agencies/{agency}', [AgencyController::class, 'update'])->name('agencies.update');
+    Route::delete('/agencies/{agency}', [AgencyController::class, 'destroy'])->name('agencies.destroy');
 });

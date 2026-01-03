@@ -87,7 +87,7 @@
                                 <td>{{ \Carbon\Carbon::parse($g->created_at)->format('d/m/y') }}</td>
                                 <td>{{ $g->guest_name }}</td>
                                 <td>{{ $g->number_phone }}</td>
-                                <td>{{ $g->agency }}</td>
+                                <td>{{ $g->agency->agency_name }}</td>
                                 <td>{{ $g->objective }}</td>
                                 <td>{{ $g->arrival_time }}</td>
                                 <td>

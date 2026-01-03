@@ -15,7 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('guest_name');
             $table->string('number_phone');
-            $table->string('agency');
+            // foreign key ke tabel agencies
+            $table->foreignId('agency_id')
+                ->constrained('agencies')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
             $table->string('objective');
             $table->time('arrival_time')->nullable(); // bisa nullable jika tidak wajib diisi
             $table->timestamps();

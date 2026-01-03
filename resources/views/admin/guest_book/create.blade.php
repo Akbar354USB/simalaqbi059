@@ -45,22 +45,25 @@
                         <label>Nomor HP</label>
                         <input type="text" name="number_phone" class="form-control">
                     </div>
-
                     <div class="form-group">
-                        <label>Nama Instansi/Satker</label>
-                        <input type="text" name="agency" class="form-control">
+                        <label for="agency_id">Nama Instansi / Satker</label>
+
+                        <select name="agency_id" id="agency_id" class="form-control form-control-lg" required>
+                            <option value="">-- Pilih Instansi / Satker --</option>
+
+                            @foreach ($agency as $item)
+                                <option value="{{ $item->id }}" {{ old('agency_id') == $item->id ? 'selected' : '' }}>
+                                    {{ $item->agency_name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
+
 
                     <div class="form-group">
                         <label>Tujuan</label>
                         <input type="text" name="objective" class="form-control">
                     </div>
-
-                    {{-- <div class="form-group">
-                        <label>Jam Datang</label>
-                        <input type="text" name="arrival_time" class="form-control">
-                    </div> --}}
-
                     <div class="form-group">
                         <label>Jam Datang</label>
                         <input type="time" name="arrival_time"
@@ -94,7 +97,7 @@
     <script>
         $(document).ready(function() {
             $('.select2').select2({
-                placeholder: "Cari Pegawai",
+                placeholder: "Cari Pegawai..",
                 allowClear: true
             });
         });

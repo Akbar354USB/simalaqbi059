@@ -59,14 +59,33 @@
                     </div>
 
                     {{-- Instansi --}}
-                    <div class="form-group">
+                    {{-- <div class="form-group">
                         <label>Nama Instansi/Satker</label>
                         <input type="text" name="agency" class="form-control @error('agency') is-invalid @enderror"
                             value="{{ old('agency', $guest->agency) }}">
                         @error('agency')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div> --}}
+
+                    <div class="form-group">
+                        <label>Nama Instansi / Satker</label>
+                        <select name="agency_id" class="form-control @error('agency_id') is-invalid @enderror">
+
+                            <option value="">-- Pilih Instansi --</option>
+                            @foreach ($agency as $item)
+                                <option value="{{ $item->id }}"
+                                    {{ old('agency_id', $guest->agency_id) == $item->id ? 'selected' : '' }}>
+                                    {{ $item->agency_name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('agency_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
+
 
                     {{-- Tujuan --}}
                     <div class="form-group">
