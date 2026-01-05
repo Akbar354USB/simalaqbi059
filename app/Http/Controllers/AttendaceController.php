@@ -6,6 +6,7 @@ use App\Models\Attendace;
 use App\Models\OfficeLocation;
 use App\Models\WorkShift;
 use App\Services\GeoService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -146,11 +147,28 @@ class AttendaceController extends Controller
         ]);
     }
 
-    public function dataindex()
+    public function dataindex(Request $request)
     {
-        $attendances = Attendace::with(['employee', 'workShift'])
-            ->latest('attendance_time')
-            ->paginate(10);
+        // $attendances = Attendace::with(['employee', 'workShift'])
+        //     ->latest('attendance_time')
+        //     ->paginate(10);
+
+        // return view('attendance.dataindex', compact('attendances'));
+        $query = Attendace::with(['employee', 'workShift'])
+            ->latest('attendance_time');
+
+        // Filter berdasarkan tanggal
+        if ($request->filled('date')) {
+            $query->whereDate('attendance_date', $request->date);
+        }
+
+        // Filter berdasarkan bulan
+        if ($request->filled('month')) {
+            $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
+                ->whereYear('attendance_date', date('Y', strtotime($request->month)));
+        }
+
+        $attendances = $query->paginate(10);
 
         return view('attendance.dataindex', compact('attendances'));
     }
@@ -167,5 +185,53 @@ class AttendaceController extends Controller
         return redirect()
             ->route('attendances.data')
             ->with('success', 'Data absensi dan foto berhasil dihapus');
+    }
+
+    public function destroyAll()
+    {
+        $attendances = Attendace::all();
+
+        foreach ($attendances as $attendance) {
+            if (
+                $attendance->photo_path &&
+                Storage::disk('public')->exists($attendance->photo_path)
+            ) {
+
+                Storage::disk('public')->delete($attendance->photo_path);
+            }
+        }
+
+        Attendace::truncate(); // hapus semua data tabel
+
+        return redirect()
+            ->route('attendances.data')
+            ->with('success', 'Semua data absensi dan foto berhasil dihapus');
+    }
+
+    public function printPdf(Request $request)
+    {
+        $query = Attendace::with(['employee', 'workShift'])
+            ->orderBy('attendance_date', 'asc')
+            ->orderBy('attendance_time', 'asc');
+
+        // Filter tanggal
+        if ($request->filled('date')) {
+            $query->whereDate('attendance_date', $request->date);
+        }
+
+        // Filter bulan
+        if ($request->filled('month')) {
+            $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
+                ->whereYear('attendance_date', date('Y', strtotime($request->month)));
+        }
+
+        $attendances = $query->get();
+
+        $pdf = Pdf::loadView('attendance.pdf', [
+            'attendances' => $attendances,
+            'request' => $request
+        ])->setPaper('A4', 'landscape');
+
+        return $pdf->stream('data-absensi.pdf');
     }
 }

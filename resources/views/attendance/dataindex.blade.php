@@ -18,6 +18,67 @@
                     </div>
                 @endif
 
+                <div class="mb-3">
+                    <div class="row align-items-end">
+
+                        <!-- FORM FILTER -->
+                        <div class="col-md-9">
+                            <form method="GET" action="{{ route('attendances.data') }}">
+                                <div class="row align-items-end">
+
+                                    <div class="col-md-3">
+                                        <label>Tanggal</label>
+                                        <input type="date" name="date" class="form-control"
+                                            value="{{ request('date') }}">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label>Bulan</label>
+                                        <input type="month" name="month" class="form-control"
+                                            value="{{ request('month') }}">
+                                    </div>
+
+                                    <!-- GROUP TOMBOL -->
+                                    <div class="col-md-6">
+                                        <div class="d-flex gap-2">
+
+                                            <button type="submit" class="btn btn-primary mr-2">
+                                                🔍 Filter
+                                            </button>
+
+                                            <a href="{{ route('attendances.data') }}" class="btn btn-secondary mr-2">
+                                                🔄 Reset
+                                            </a>
+
+                                            <a href="{{ route('attendances.printPdf', request()->query()) }}"
+                                                class="btn btn-success" target="_blank">
+                                                🖨️ PDF
+                                            </a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <!-- FORM HAPUS SEMUA -->
+                        <div class="col-md-3 d-flex justify-content-end">
+                            <form action="{{ route('attendances.destroyAll') }}" method="POST"
+                                onsubmit="return confirm('Yakin hapus SEMUA data absensi dan foto?')">
+                                @csrf
+                                @method('DELETE')
+
+                                <button class="btn btn-danger align-self-end">
+                                    🗑 Hapus Semua
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover text-center">
                         <thead class="thead-light">
@@ -123,7 +184,7 @@
                 </div>
 
                 <div class="mt-3">
-                    {{ $attendances->links() }}
+                    {{ $attendances->appends(request()->query())->links() }}
                 </div>
 
             </div>

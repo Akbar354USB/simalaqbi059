@@ -131,4 +131,6 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     Route::post('/attendance/store', [AttendaceController::class, 'store'])->name('attendance.store');
     Route::get('/attendances-data', [AttendaceController::class, 'dataindex'])->name('attendances.data');
     Route::delete('/attendances/{attendance}', [AttendaceController::class, 'destroy'])->name('attendances.destroy');
+    Route::delete('/attendances-delete-all', [AttendaceController::class, 'destroyAll'])->name('attendances.destroyAll');
+    Route::get('/attendances-print-pdf', [AttendaceController::class, 'printPdf'])->name('attendances.printPdf');
 });
