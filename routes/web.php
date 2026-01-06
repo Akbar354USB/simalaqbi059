@@ -15,6 +15,7 @@ use App\Http\Controllers\ReminderLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\AttendaceController;
+use App\Http\Controllers\WorkShiftController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -133,4 +134,11 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     Route::delete('/attendances/{attendance}', [AttendaceController::class, 'destroy'])->name('attendances.destroy');
     Route::delete('/attendances-delete-all', [AttendaceController::class, 'destroyAll'])->name('attendances.destroyAll');
     Route::get('/attendances-print-pdf', [AttendaceController::class, 'printPdf'])->name('attendances.printPdf');
+
+    Route::get('/work-shifts', [WorkShiftController::class, 'index'])->name('work-shifts.index');
+    Route::get('/work-shifts/create', [WorkShiftController::class, 'create'])->name('work-shifts.create');
+    Route::post('/work-shifts', [WorkShiftController::class, 'store'])->name('work-shifts.store');
+    Route::get('/work-shifts/{workShift}/edit', [WorkShiftController::class, 'edit'])->name('work-shifts.edit');
+    Route::put('/work-shifts/{workShift}', [WorkShiftController::class, 'update'])->name('work-shifts.update');
+    Route::delete('/work-shifts/{workShift}', [WorkShiftController::class, 'destroy'])->name('work-shifts.destroy');
 });

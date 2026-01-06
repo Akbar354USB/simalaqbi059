@@ -39,6 +39,7 @@
             <div id="absen" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <h6 class="collapse-header">Absensi</h6>
+                    <a class="collapse-item" href="{{ route('work-shifts.index') }}">Pembagian Shift Kerja</a>
                     <a class="collapse-item" href="{{ route('attendance.index') }}">Halaman Absensi</a>
                     <a class="collapse-item" href="{{ route('attendances.data') }}">Data Absensi</a>
                 </div>
