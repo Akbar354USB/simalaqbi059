@@ -31,7 +31,8 @@
 
                         <p style="font-family: 'Poppins', sans-serif; font-size: 1.05rem; line-height: 1.8;"
                             class="text-muted">
-                            <strong>Selamat!</strong> Sistem Hadirku SIMONA59 Reminder Absensi telah berhasil terhubung
+                            <strong>Selamat! {{ Auth::user()->name }}</strong>, Sistem Hadirku SIMONA59 Reminder Absensi
+                            telah berhasil terhubung
                             dengan Google
                             Kalender Anda! 🎉
                             Setiap jadwal dan event absensi kini akan otomatis tersinkronisasi ke Google Kalender yang

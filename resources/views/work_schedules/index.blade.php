@@ -7,6 +7,11 @@
                 <h5 class="m-0 font-weight-bold text-primary">Data Waktu Reminder Pegawai</h5>
             </div>
             <div class="card-body">
+                <div class="alert alert-info text-left" role="alert">
+                    <i class="fas fa-info-circle"></i>
+                    Tambahkan waktu kapan pegawai ingin di pasangkan reminder ke <strong>Goole Calendar</strong>. Reminder
+                    akan Mengirimkan Notifikasi 10 menit sebelum Waktu yang di tentukan.
+                </div>
                 <a href="{{ route('work-schedules.create') }}" class="btn btn-primary mb-3">
                     Tambah Jadwal
                 </a>

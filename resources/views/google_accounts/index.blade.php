@@ -10,7 +10,10 @@
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
-
+                <div class="alert alert-info text-left" role="alert">
+                    <i class="fas fa-info-circle"></i>
+                    Data diambil dari User yang berhasil terhubung dengan <strong>Goole Calendar</strong>.
+                </div>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <thead class="table-light">

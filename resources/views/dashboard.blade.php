@@ -2,9 +2,14 @@
 
 @section('content')
     <div class="container-fluid">
-
+        <div class="alert alert-success text-left" role="alert">
+            <i class="fas fa-info-circle"></i>
+            Selamat Datang <strong>{{ Auth::user()->name }}</strong> di SIMONA59. Sistem Monitoring dan Administrasi KPPN
+            Majene.
+        </div>
         <div class="row mb-3">
             <!-- Earnings (Monthly) Card Example -->
+
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card h-100">
                     <div class="card-body">
@@ -106,8 +111,8 @@
 
                             <div class="progress mb-4">
                                 <div class="progress-bar bg-success" role="progressbar"
-                                    style="width: {{ $kategori->progress() }}%" aria-valuenow="{{ $kategori->progress() }}"
-                                    aria-valuemin="0" aria-valuemax="100">
+                                    style="width: {{ $kategori->progress() }}%"
+                                    aria-valuenow="{{ $kategori->progress() }}" aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
                         @endforeach
