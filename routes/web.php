@@ -33,32 +33,26 @@ Route::get('/', function () {
     return view('welcome');
 })->name('sukses');
 
-
 Route::get('/google/connect/{employee}', [GoogleController::class, 'redirect'])
     ->name('google.connect');
 
 Route::get('/google/callback/', [GoogleController::class, 'callback'])
     ->name('google.callback');
-
 Route::get('/tamu', [HomeController::class, 'tamu'])
     ->name('redirect.tamu');
 
-Route::middleware(['auth', 'google.connected'])->group(function () {
-    // Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/tamu', [HomeController::class, 'tamu'])
+        ->name('redirect.tamu');
 });
 
-
-
-
-Auth::routes();
-
-
-
-Route::middleware('auth', 'ChekRole:test')->group(function () {});
-
+Route::middleware(['auth', 'ChekRole:superadmin', 'google.connected'])->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])
+        ->name('home');
+});
 
 Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
+    // Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
@@ -145,3 +139,6 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     Route::put('/work-shifts/{workShift}', [WorkShiftController::class, 'update'])->name('work-shifts.update');
     Route::delete('/work-shifts/{workShift}', [WorkShiftController::class, 'destroy'])->name('work-shifts.destroy');
 });
+
+
+Auth::routes();

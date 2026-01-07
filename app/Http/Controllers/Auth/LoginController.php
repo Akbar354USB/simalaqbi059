@@ -11,7 +11,7 @@ class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    protected $redirectTo = '/home';
+    // protected $redirectTo = '/home';
 
     public function __construct()
     {
@@ -52,5 +52,24 @@ class LoginController extends Controller
             'employee_id' => $employee->id,
             'password'    => $request->password,
         ];
+    }
+
+    protected function authenticated(Request $request, $user)
+    {
+        $employee = $user->employee;
+        $googleAccount = $employee?->googleAccount;
+
+        // Jika BELUM pernah connect Google
+        if (!$googleAccount || !$googleAccount->refresh_token) {
+            return redirect()->route('google.connect', $employee->id);
+        }
+
+        // 🔐 SUPERADMIN
+        if ($user->role === 'superadmin') {
+            return redirect()->route('home');
+        }
+
+        // 👤 USER BIASA
+        return redirect()->route('redirect.tamu');
     }
 }
