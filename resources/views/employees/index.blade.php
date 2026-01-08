@@ -11,13 +11,6 @@
                 <a href="{{ route('employees.create') }}" class="btn btn-primary mb-2">
                     + Tambah Data Pegawai
                 </a>
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover">
                         <thead class="table-light">
@@ -75,4 +68,16 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js')
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#1cc88a'
+            });
+        </script>
+    @endif
 @endsection

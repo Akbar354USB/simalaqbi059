@@ -57,3 +57,15 @@
         </div>
     </div>
 @endsection
+@section('js')
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#1cc88a'
+            });
+        </script>
+    @endif
+@endsection

@@ -14,10 +14,6 @@
                     penuh oleh Admin.
                 </div>
                 <a href="{{ route('users.create') }}" class="btn btn-primary mb-3">Tambah User</a>
-
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
                         <thead>
@@ -62,11 +58,16 @@
             </div>
         </div>
     </div>
-
-
-    {{-- <div class="container">
-        <h4 class="mb-3">Manajemen User</h4>
-
-
-    </div> --}}
+@endsection
+@section('js')
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#1cc88a'
+            });
+        </script>
+    @endif
 @endsection

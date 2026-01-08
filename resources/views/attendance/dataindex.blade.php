@@ -12,12 +12,6 @@
 
             <div class="card-body">
 
-                @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
                 <div class="mb-3">
                     <div class="row align-items-end">
 
@@ -191,4 +185,16 @@
         </div>
 
     </div>
+@endsection
+@section('js')
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#1cc88a'
+            });
+        </script>
+    @endif
 @endsection

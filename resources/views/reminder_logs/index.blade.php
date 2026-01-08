@@ -20,14 +20,6 @@
                     </button>
                 </form>
             </div>
-
-            {{-- ALERT --}}
-            @if (session('success'))
-                <div class="alert alert-success m-3">
-                    {{ session('success') }}
-                </div>
-            @endif
-
             <div class="card-body">
 
                 {{-- FILTER & SEARCH --}}
@@ -140,4 +132,16 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js')
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#1cc88a'
+            });
+        </script>
+    @endif
 @endsection

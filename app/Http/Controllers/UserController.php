@@ -26,8 +26,10 @@ class UserController extends Controller
         $request->validate([
             'employee_id' => 'required|exists:employees,id|unique:users,employee_id',
             'password'    => 'required|min:6|confirmed',
-            'role'        => 'required|in:admin,pegawai',
+            'role'        => 'required',
         ]);
+
+        // dd($request);
 
         User::create([
             'employee_id' => $request->employee_id,

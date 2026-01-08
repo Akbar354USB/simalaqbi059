@@ -7,9 +7,6 @@
                 <h5 class="m-0 font-weight-bold text-primary">Akun Google Terdaftar</h5>
             </div>
             <div class="card-body">
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
                 <div class="alert alert-info text-left" role="alert">
                     <i class="fas fa-info-circle"></i>
                     Data diambil dari User yang berhasil terhubung dengan <strong>Goole Calendar</strong>.
@@ -56,4 +53,16 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js')
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#1cc88a'
+            });
+        </script>
+    @endif
 @endsection

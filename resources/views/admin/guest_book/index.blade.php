@@ -8,15 +8,9 @@
             </div>
 
             <div class="card-body">
-
-                @if (session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
-
                 <a href="{{ route('guest_book_create') }}" class="btn btn-primary mb-3">+ Tambah Tamu</a>
 
-                <a href="{{ route('guest_book_print_pdf', request()->query()) }}" class="btn btn-success mb-3"
-                    target="_blank">
+                <a href="{{ route('guest_book_print_pdf', request()->query()) }}" class="btn btn-success mb-3" target="_blank">
                     <i class="fas fa-file-pdf"></i> Print PDF
                 </a>
 
@@ -122,4 +116,16 @@
             </div>
         </div>
     </div>
+@endsection
+@section('js')
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                confirmButtonColor: '#1cc88a'
+            });
+        </script>
+    @endif
 @endsection
