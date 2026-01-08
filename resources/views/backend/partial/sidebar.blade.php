@@ -3,7 +3,7 @@
             <div class="sidebar-brand-icon">
                 <img src="img/logo/logo2.png">
             </div>
-            <div class="sidebar-brand-text mx-3">KPPN</div>
+            <div class="sidebar-brand-text mx-3">SImona59</div>
         </a>
         <hr class="sidebar-divider my-0">
         <li class="nav-item">
