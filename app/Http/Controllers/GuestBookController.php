@@ -51,7 +51,8 @@ class GuestBookController extends Controller
     // ============================
     public function create()
     {
-        $employees = Employee::all();
+        // $employees = Employee::all();
+        $employees = Employee::where('status', 'PNS')->get();
         $agency = Agency::all();
         return view('admin.guest_book.create', compact('employees', 'agency'));
     }

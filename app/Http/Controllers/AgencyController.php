@@ -7,19 +7,12 @@ use Illuminate\Http\Request;
 
 class AgencyController extends Controller
 {
-    // 1. Tampilkan data
-    // public function index()
-    // {
-    //     $agencies = Agency::all();
-    //     return view('agencies.index', compact('agencies'));
-    // }
     public function index(Request $request)
     {
         $search = $request->search;
 
         $agencies = Agency::when($search, function ($query, $search) {
-            $query->where('agency_code', 'like', "%{$search}%")
-                ->orWhere('agency_name', 'like', "%{$search}%");
+            $query->where('agency_name', 'like', "%{$search}%");
         })->get();
 
         return view('agencies.index', compact('agencies', 'search'));
@@ -36,15 +29,26 @@ class AgencyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'agency_code' => 'required|unique:agencies',
-            'agency_name' => 'required',
+            'agency_name' => 'required|string|max:255',
         ]);
 
-        Agency::create($request->all());
+        $agency = Agency::create([
+            'agency_name' => $request->agency_name
+        ]);
 
+        // Jika request dari AJAX (Select2)
+        if ($request->ajax()) {
+            return response()->json([
+                'id' => $agency->id,
+                'agency_name' => $agency->agency_name,
+            ]);
+        }
+
+        // Jika dari form biasa
         return redirect()->route('agencies.index')
             ->with('success', 'Data instansi berhasil ditambahkan');
     }
+
 
     // 4. Form edit
     public function edit($id)
@@ -57,12 +61,6 @@ class AgencyController extends Controller
     public function update(Request $request, $id)
     {
         $agency = Agency::findOrFail($id);
-
-        $request->validate([
-            'agency_code' => 'required|unique:agencies,agency_code,' . $agency->id,
-            'agency_name' => 'required',
-        ]);
-
         $agency->update($request->all());
 
         return redirect()->route('agencies.index')

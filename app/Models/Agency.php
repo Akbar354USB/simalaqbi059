@@ -10,7 +10,6 @@ class Agency extends Model
     use HasFactory;
 
     protected $fillable = [
-        'agency_code',
         'agency_name'
     ];
 

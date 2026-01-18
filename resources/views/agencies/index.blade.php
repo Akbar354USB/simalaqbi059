@@ -30,7 +30,6 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>Kode Satker</th>
                             <th>Nama Satker</th>
                             <th>Aksi</th>
                         </tr>
@@ -38,7 +37,6 @@
                     <tbody>
                         @foreach ($agencies as $agency)
                             <tr>
-                                <td>{{ $agency->agency_code }}</td>
                                 <td>{{ $agency->agency_name }}</td>
                                 <td>
                                     <a href="{{ route('agencies.edit', $agency->id) }}" class="btn btn-warning btn-sm"><i

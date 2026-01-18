@@ -11,11 +11,6 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label>Kode Satker</label>
-                        <input type="text" name="agency_code" class="form-control" required>
-                    </div>
-
-                    <div class="mb-3">
                         <label>Nama Satker</label>
                         <input type="text" name="agency_name" class="form-control" required>
                     </div>

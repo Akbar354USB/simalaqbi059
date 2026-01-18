@@ -10,13 +10,6 @@
                 <form action="{{ route('agencies.update', $agency->id) }}" method="POST">
                     @csrf
                     @method('PUT')
-
-                    <div class="mb-3">
-                        <label>Kode Satker</label>
-                        <input type="text" name="agency_code" class="form-control" value="{{ $agency->agency_code }}"
-                            required>
-                    </div>
-
                     <div class="mb-3">
                         <label>Nama Satker</label>
                         <input type="text" name="agency_name" class="form-control" value="{{ $agency->agency_name }}"
