@@ -60,4 +60,9 @@ class Employee extends Model
     {
         return $this->hasMany(AdditionalLeave::class);
     }
+
+    public function faces()
+    {
+        return $this->hasMany(EmployeeFace::class);
+    }
 }
