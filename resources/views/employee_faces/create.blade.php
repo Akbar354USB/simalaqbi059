@@ -1,160 +1,128 @@
 @extends('master')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">📸 Tambah Data Wajah Pegawai</h5>
-            </div>
+    <div class="container d-flex justify-content-center">
+        <div class="card shadow-sm mt-4" style="max-width: 420px; width:100%">
+            <div class="card-body text-center">
 
-            <div class="card-body">
+                <h5 class="mb-1">Verifikasi Wajah</h5>
+                <small class="text-muted">{{ $employee->employee_name }}</small>
 
-                {{-- Error Validation --}}
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                <div class="mt-3 position-relative">
+                    <video id="video" autoplay playsinline muted class="w-100 rounded border"
+                        style="aspect-ratio: 3/4; object-fit: cover">
+                    </video>
+
+                    <div id="status" class="position-absolute top-50 start-50 translate-middle text-white fw-bold"
+                        style="display:none">
+                        Memuat kamera...
                     </div>
-                @endif
+                </div>
 
-                <form method="POST" action="{{ route('employee-faces.store') }}" onsubmit="return validateFace()">
-                    @csrf
+                <button id="capture" class="btn btn-primary w-100 mt-3">
+                    Rekam Wajah
+                </button>
 
-                    {{-- Pegawai --}}
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Pegawai</label>
-                        <select name="employee_id" class="form-control" required>
-                            <option value="">-- Pilih Pegawai --</option>
-                            @foreach ($employees as $employee)
-                                <option value="{{ $employee->id }}">
-                                    {{ $employee->name }} - {{ $employee->nip }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                <small class="d-block text-muted mt-2">
+                    Pastikan wajah terlihat jelas dan cahaya cukup
+                </small>
 
-                    {{-- Hidden Descriptor --}}
-                    <input type="hidden" name="face_descriptor" id="face_descriptor">
-
-                    {{-- Camera --}}
-                    <div class="text-center mb-3">
-                        <video id="video" width="320" height="240" class="border rounded bg-dark shadow-sm"
-                            autoplay muted></video>
-                    </div>
-
-                    {{-- Status --}}
-                    <div class="text-center mb-3">
-                        <span id="face-status" class="badge bg-secondary">
-                            ⏳ Memuat model wajah...
-                        </span>
-                    </div>
-
-                    {{-- Action --}}
-                    <div class="d-flex justify-content-center gap-2">
-                        <button type="button" class="btn btn-secondary" onclick="captureFace()">
-                            📸 Ambil Wajah
-                        </button>
-
-                        <button type="submit" id="btnSubmit" class="btn btn-primary" disabled>
-                            💾 Simpan
-                        </button>
-                    </div>
-
-                </form>
             </div>
         </div>
     </div>
 @endsection
 
-
 @section('js')
-    <script defer src="https://unpkg.com/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script type="module">
+        import vision from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest";
 
-    <script>
-        /* =====================================================
-       ELEMENTS
-    ===================================================== */
-        const video = document.getElementById('video');
-        const faceStatus = document.getElementById('face-status');
-        const btnSubmit = document.getElementById('btnSubmit');
-        const descriptorInput = document.getElementById('face_descriptor');
+        const {
+            FaceLandmarker,
+            FilesetResolver
+        } = vision;
 
-        /* =====================================================
-           CAMERA
-        ===================================================== */
-        navigator.mediaDevices.getUserMedia({
-                video: true
-            })
-            .then(stream => video.srcObject = stream)
-            .catch(() => {
-                faceStatus.textContent = '❌ Kamera tidak tersedia';
-                faceStatus.className = 'badge bg-danger';
+        const video = document.getElementById("video");
+        const captureBtn = document.getElementById("capture");
+        const statusText = document.getElementById("status");
+
+        let faceLandmarker;
+
+        async function init() {
+            statusText.style.display = "block";
+            statusText.innerText = "Mengaktifkan kamera...";
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: "user"
+                }
+            });
+            video.srcObject = stream;
+
+            statusText.innerText = "Memuat model AI...";
+
+            const resolver = await FilesetResolver.forVisionTasks(
+                "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+            );
+
+            faceLandmarker = await FaceLandmarker.createFromOptions(resolver, {
+                baseOptions: {
+                    modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
+                },
+                runningMode: "VIDEO",
+                numFaces: 1
             });
 
-        /* =====================================================
-           LOAD MODELS (FAST)
-        ===================================================== */
-        let modelReady = false;
-        const MODEL_URL = '/models';
+            statusText.style.display = "none";
+            console.log("FaceLandmarker siap");
+        }
 
-        Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-            faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-        ]).then(() => {
-            modelReady = true;
-            faceStatus.textContent = '✅ Model wajah siap';
-            faceStatus.className = 'badge bg-success';
+        captureBtn.addEventListener("click", async () => {
+            if (!faceLandmarker) {
+                alert("Model belum siap");
+                return;
+            }
+
+            captureBtn.disabled = true;
+            captureBtn.innerText = "Memverifikasi...";
+
+            const results = await faceLandmarker.detectForVideo(
+                video,
+                performance.now()
+            );
+
+            if (!results.faceLandmarks || results.faceLandmarks.length === 0) {
+                alert("Wajah tidak terdeteksi");
+                captureBtn.disabled = false;
+                captureBtn.innerText = "Rekam Wajah";
+                return;
+            }
+
+            let embedding = [];
+            results.faceLandmarks[0].forEach(p => {
+                embedding.push(p.x, p.y, p.z);
+            });
+
+            fetch("{{ url('/employee-face/' . $employee->id) }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                    },
+                    body: JSON.stringify({
+                        embedding
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(() => alert("Gagal menyimpan wajah"))
+                .finally(() => {
+                    captureBtn.disabled = false;
+                    captureBtn.innerText = "Rekam Wajah";
+                });
         });
 
-        /* =====================================================
-           CAPTURE FACE (OPTIMIZED)
-        ===================================================== */
-        async function captureFace() {
-
-            if (!modelReady) {
-                alert('⏳ Model wajah belum siap');
-                return;
-            }
-
-            faceStatus.textContent = '🔍 Mendeteksi wajah...';
-            faceStatus.className = 'badge bg-warning';
-
-            const detection = await faceapi
-                .detectSingleFace(
-                    video,
-                    new faceapi.TinyFaceDetectorOptions({
-                        inputSize: 224,
-                        scoreThreshold: 0.5
-                    })
-                )
-                .withFaceDescriptor();
-
-            if (!detection) {
-                faceStatus.textContent = '❌ Wajah tidak terdeteksi';
-                faceStatus.className = 'badge bg-danger';
-                btnSubmit.disabled = true;
-                return;
-            }
-
-            descriptorInput.value = JSON.stringify(Array.from(detection.descriptor));
-
-            faceStatus.textContent = '✅ Wajah berhasil direkam';
-            faceStatus.className = 'badge bg-success';
-            btnSubmit.disabled = false;
-        }
-
-        /* =====================================================
-           FINAL VALIDATION
-        ===================================================== */
-        function validateFace() {
-            if (!descriptorInput.value) {
-                alert('❌ Silakan ambil wajah terlebih dahulu');
-                return false;
-            }
-            return true;
-        }
+        init();
     </script>
 @endsection

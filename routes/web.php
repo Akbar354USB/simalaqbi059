@@ -186,9 +186,12 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     Route::delete('/work-units/{id}', [WorkUnitController::class, 'destroy'])->name('work-units.destroy');
 
     /*Employee Face Routes*/
-    Route::get('/employee-faces', [EmployeeFaceController::class, 'index'])->name('employee-faces.index');
-    Route::get('/employee-faces/create', [EmployeeFaceController::class, 'create'])->name('employee-faces.create');
-    Route::post('/employee-faces', [EmployeeFaceController::class, 'store'])->name('employee-faces.store');
+    Route::get('/employee-faces', [EmployeeFaceController::class, 'index'])
+        ->name('employee-faces.index');
+    Route::get('/employee-faces/create', [EmployeeFaceController::class, 'create'])
+        ->name('employee-faces.create');
+    Route::post('/employee-faces', [EmployeeFaceController::class, 'store'])
+        ->name('employee-faces.store');
     Route::delete('/employee-faces/{employeeFace}', [EmployeeFaceController::class, 'destroy'])->name('employee-faces.destroy');
 });
 

@@ -18,8 +18,8 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->json('face_descriptor');
-            // array 128 float dari face-api.js
+            $table->json('face_embedding');
+
 
             $table->timestamps();
         });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\EmployeeFace;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EmployeeFaceController extends Controller
 {
@@ -16,26 +17,31 @@ class EmployeeFaceController extends Controller
 
     public function create()
     {
-        $employees = Employee::where('is_active', true)->get();
-        return view('employee_faces.create', compact('employees'));
+        $employee = Auth::user()->employee;
+        // asumsi relasi: User hasOne Employee
+
+        return view('employee_faces.create', compact('employee'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'employee_id' => 'required|exists:employees,id',
-            'face_descriptor' => 'required|json'
+            'embedding' => 'required|array'
         ]);
 
-        EmployeeFace::create([
-            'employee_id' => $request->employee_id,
-            'face_descriptor' => json_decode($request->face_descriptor, true)
-        ]);
+        $employee = Auth::user()->employee;
 
-        return redirect()
-            ->route('employee-faces.index')
-            ->with('success', 'Data wajah berhasil disimpan');
+        EmployeeFace::updateOrCreate(
+            ['employee_id' => $employee->id],
+            ['face_embedding' => $request->embedding]
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Wajah berhasil direkam'
+        ]);
     }
+
 
 
     public function destroy(EmployeeFace $employeeFace)

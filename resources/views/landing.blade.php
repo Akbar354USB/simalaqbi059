@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Welcome-Simona059</title>
+    <title>Welcome-SIMALAQBI059</title>
     <meta name="description" content="">
     <meta name="keywords" content="">
 
@@ -48,8 +48,8 @@
                 <div class="row gy-4">
                     <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center"
                         data-aos="zoom-out">
-                        <h1>SIMONA 059</h1>
-                        <p>Sistem Monitoring Dan Administrasi KPPN 059 Majene</p>
+                        <h1>SIMALAQBI 059</h1>
+                        <p>Sistem Informasi Monitoring Admnistrasi Layanan Baik dan Integratif KPPN 059 Majene</p>
                         <div class="d-flex">
                             <a href="{{ route('login') }}" class="btn-get-started">Get Started</a>
                         </div>
