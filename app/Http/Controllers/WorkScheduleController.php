@@ -10,7 +10,7 @@ class WorkScheduleController extends Controller
 {
     public function index()
     {
-        $schedules = WorkSchedule::with('employee')->latest()->get();
+        $schedules = WorkSchedule::with('employee')->latest()->paginate(10);
         return view('work_schedules.index', compact('schedules'));
     }
 

@@ -10,7 +10,7 @@ class WorkShiftController extends Controller
     // Tampilkan semua data
     public function index()
     {
-        $workShifts = WorkShift::orderBy('id', 'desc')->get();
+        $workShifts = WorkShift::orderBy('id', 'desc')->paginate(10);
         return view('work_shifts.index', compact('workShifts'));
     }
 

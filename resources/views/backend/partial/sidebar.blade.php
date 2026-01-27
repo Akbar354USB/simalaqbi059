@@ -1,104 +1,65 @@
-    <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar">
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-            <div class="sidebar-brand-icon">
-                <img src="img/logo/logo2.png">
-            </div>
-            <div class="sidebar-brand-text mx-3">SImona59</div>
-        </a>
-        <hr class="sidebar-divider my-0">
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('home') }}">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span></a>
-        </li>
-        <hr class="sidebar-divider">
-        <div class="sidebar-heading">
-            Features
+<div class="main-sidebar sidebar-style-2">
+    <aside id="sidebar-wrapper">
+        <div class="sidebar-brand">
+            <a href="#">SIMALAQBI 059</a>
         </div>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#data" aria-expanded="true"
-                aria-controls="collapseTable">
-                <i class="fas fa-database"></i>
-                <span>Data</span>
-            </a>
-            <div id="data" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Daftar Data</h6>
-                    <a class="collapse-item" href="{{ route('employees.index') }}">Data Pegawai</a>
-                    <a class="collapse-item" href="{{ route('work-units.index') }}">Data Unit Kerja</a>
-                    <a class="collapse-item" href="{{ route('agencies.index') }}">Data Satker/Instansi</a>
-                    <a class="collapse-item" href="{{ route('users.index') }}">Manajemen User</a>
-                </div>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#absen"
-                aria-expanded="true" aria-controls="collapseTable">
-                <i class="fas fa-user-clock"></i>
-                <span>Absensi PPNPN</span>
-            </a>
-            <div id="absen" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Absensi</h6>
-                    <a class="collapse-item" href="{{ route('work-shifts.index') }}">Pembagian Shift Kerja</a>
-                    <a class="collapse-item" href="{{ route('attendance.index') }}">Halaman Absensi</a>
-                    <a class="collapse-item" href="{{ route('attendances.data') }}">Data Absensi</a>
-                </div>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('guest_book_index') }}" aria-expanded="true"
-                aria-controls="collapseTable">
-                <i class="fas fa-address-book"></i>
-                <span>Buku Tamu</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseemail"
-                aria-expanded="true" aria-controls="collapseTable">
-                <i class="fas fa-bell"></i>
-                <span>Reminder</span>
-            </a>
-            <div id="collapseemail" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Reminder</h6>
-                    <a class="collapse-item" href="{{ route('work-schedules.index') }}">Jadwal Reminder</a>
-                    <a class="collapse-item" href="{{ route('google-accounts.index') }}">Akun google terdaftar</a>
-                    <a class="collapse-item" href="{{ route('reminder-logs.index') }}">Monitoring Reminder</a>
-                </div>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsecuti"
-                aria-expanded="true" aria-controls="collapseTable">
-                <i class="fas fa-calendar-check"></i>
-                <span>Cuti Pegawai</span>
-            </a>
-            <div id="collapsecuti" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Cuti Tahunan Tambahan</h6>
-                    <a class="collapse-item" href="{{ route('additional-leave-requests.create') }}">Form Pengajuan
-                        Cuti</a>
-                    <a class="collapse-item" href="{{ route('additional-leave-requests.index') }}">Data Pengajuan
-                        Cuti</a>
-                    <a class="collapse-item" href="{{ route('additional-leaves.index') }}">Kuota Cuti Pegawai</a>
-                </div>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTable"
-                aria-expanded="true" aria-controls="collapseTable">
-                <i class="fas fa-chart-line"></i>
-                <span>WBK-WBBM</span>
-            </a>
-            <div id="collapseTable" class="collapse" aria-labelledby="headingTable" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">WBK-WBBM</h6>
-                    <a class="collapse-item" href="{{ route('wbbm-tes-progres') }}">Cek Progress</a>
-                    <a class="collapse-item" href="{{ route('wbbm-data') }}">Indikator Capaian</a>
-                </div>
-            </div>
-        </li>
-        <hr class="sidebar-divider">
-        <div class="version" id="version-ruangadmin"></div>
-    </ul>
+        <div class="sidebar-brand sidebar-brand-sm">
+            <a href="#">059</a>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="menu-header">Dashboard</li>
+            <li><a class="nav-link" href="{{ route('home') }}"><i class="fas fa-fire"></i>
+                    <span>Dashboard</span></a>
+            </li>
+            <li class="menu-header">Data</li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-database"></i>
+                    <span>Data</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ route('employees.index') }}">Data Pegawai</a></li>
+                    <li><a href="{{ route('work-units.index') }}">Data Unit Kerja</a></li>
+                    <li><a href="{{ route('agencies.index') }}">Data Satker/Instasi</a></li>
+                    <li><a href="{{ route('users.index') }}">Manajemen User</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-user-clock"></i>
+                    <span>Absensi PPNPN</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ route('work-shifts.index') }}">Pembagian Shift Kerja</a></li>
+                    <li><a href="{{ route('attendance.index') }}">Halaman Absensi</a></li>
+                    <li><a href="{{ route('attendances.data') }}">Data Absensi PPNPN</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-bell"></i>
+                    <span>Reminder Hadirku059</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ route('work-schedules.index') }}">Jadwal Reminder</a></li>
+                    <li><a href="{{ route('google-accounts.index') }}">Akun google terdaftar</a></li>
+                    <li><a href="{{ route('reminder-logs.index') }}">Monitoring Reminder</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-calendar-check"></i>
+                    <span>Cuti Tambahan</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ route('additional-leave-requests.create') }}">Form Pengajuan
+                            Cuti</a></li>
+                    <li><a href="{{ route('additional-leave-requests.index') }}">Data Pengajuan
+                            Cuti</a></li>
+                    <li><a href="{{ route('additional-leaves.index') }}">Kuota Cuti Pegawai</a></li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="nav-link has-dropdown"><i class="fas fa-chart-line"></i>
+                    <span>WBK-WBBM</span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ route('wbbm-tes-progres') }}">Cek Progress</a></li>
+                    <li><a href="{{ route('wbbm-data') }}">Indikator Capaian</a></li>
+                </ul>
+            </li>
+        </ul>
+        <hr>
+    </aside>
+</div>

@@ -109,7 +109,7 @@
                                             onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="btn btn-sm btn-danger">
+                                            <button type="button" class="btn btn-danger btn-sm btn-delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -125,15 +125,25 @@
                         </tbody>
                     </table>
                 </div>
-
                 {{-- PAGINATION --}}
-                {{ $logs->withQueryString()->links() }}
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="text-muted">
+                        Menampilkan {{ $logs->firstItem() }} –
+                        {{ $logs->lastItem() }} dari
+                        {{ $logs->total() }} data
+                    </div>
+
+                    <div>
+                        {{ $logs->withQueryString()->links() }}
+                    </div>
+                </div>
 
             </div>
         </div>
     </div>
 @endsection
 @section('js')
+    {{-- SweetAlert Success --}}
     @if (session('success'))
         <script>
             Swal.fire({
@@ -144,4 +154,28 @@
             });
         </script>
     @endif
+
+    {{-- SweetAlert Delete Confirmation --}}
+    <script>
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Yakin?',
+                    text: 'Data Reminder Log akan dihapus permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

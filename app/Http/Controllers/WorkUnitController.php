@@ -10,7 +10,7 @@ class WorkUnitController extends Controller
     // READ
     public function index()
     {
-        $workUnits = WorkUnit::orderBy('id', 'desc')->get();
+        $workUnits = WorkUnit::latest()->paginate(10);
         return view('work_units.index', compact('workUnits'));
     }
 

@@ -35,7 +35,7 @@
                                             style="display:inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')">
+                                            <button type="button" class="btn btn-danger btn-sm btn-delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -45,11 +45,24 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="text-muted">
+                        Menampilkan {{ $workShifts->firstItem() }} –
+                        {{ $workShifts->lastItem() }} dari
+                        {{ $workShifts->total() }} data
+                    </div>
+
+                    <div>
+                        {{ $workShifts->links() }}
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 @endsection
 @section('js')
+    {{-- SweetAlert Success --}}
     @if (session('success'))
         <script>
             Swal.fire({
@@ -60,4 +73,28 @@
             });
         </script>
     @endif
+
+    {{-- SweetAlert Delete Confirmation --}}
+    <script>
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Yakin?',
+                    text: 'Data Shift Kerja akan dihapus permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

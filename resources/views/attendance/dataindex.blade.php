@@ -142,8 +142,8 @@
                                             onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="btn btn-sm btn-danger">
-                                                🗑 Hapus
+                                            <button type="button" class="btn btn-danger btn-sm btn-delete">
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
                                     </td>
@@ -177,8 +177,19 @@
                     </table>
                 </div>
 
-                <div class="mt-3">
+                {{-- <div class="mt-3">
                     {{ $attendances->appends(request()->query())->links() }}
+                </div> --}}
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="text-muted">
+                        Menampilkan {{ $attendances->firstItem() }} –
+                        {{ $attendances->lastItem() }} dari
+                        {{ $attendances->total() }} data
+                    </div>
+
+                    <div>
+                        {{ $attendances->appends(request()->query())->links() }}
+                    </div>
                 </div>
 
             </div>
@@ -187,6 +198,7 @@
     </div>
 @endsection
 @section('js')
+    {{-- SweetAlert Success --}}
     @if (session('success'))
         <script>
             Swal.fire({
@@ -197,4 +209,28 @@
             });
         </script>
     @endif
+
+    {{-- SweetAlert Delete Confirmation --}}
+    <script>
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const form = this.closest('form');
+
+                Swal.fire({
+                    title: 'Yakin?',
+                    text: 'Data Absensi akan dihapus permanen!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

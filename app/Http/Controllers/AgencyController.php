@@ -13,7 +13,9 @@ class AgencyController extends Controller
 
         $agencies = Agency::when($search, function ($query, $search) {
             $query->where('agency_name', 'like', "%{$search}%");
-        })->get();
+        })
+            ->paginate(10) // jumlah data per halaman
+            ->withQueryString(); // agar parameter search tidak hilang
 
         return view('agencies.index', compact('agencies', 'search'));
     }

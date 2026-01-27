@@ -10,7 +10,7 @@ class GoogleAccountController extends Controller
 {
     public function index()
     {
-        $googleAccounts = GoogleAccount::with('employee')->latest()->get();
+        $googleAccounts = GoogleAccount::with('employee')->latest()->paginate(10);
         return view('google_accounts.index', compact('googleAccounts'));
     }
 

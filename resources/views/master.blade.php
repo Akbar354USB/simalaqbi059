@@ -2,62 +2,82 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link href="img/logo/logo.png" rel="icon">
-    <title>SIMona59</title>
-    <link href="{{ asset('backend/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('backend/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('backend/css/ruang-admin.min.css') }}" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css"
-        rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Simalaqbi058</title>
 
+    <!-- General CSS Files -->
+    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/modules/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/modules/fontawesome/css/all.min.css') }}">
+
+    <!-- CSS Libraries -->
+
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/css/components.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     @yield('css')
+    <!-- Start GA -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-94034622-3');
+    </script>
+    <!-- /END GA -->
 </head>
 
-<body id="page-top">
-    <div id="wrapper">
-        <!-- Sidebar -->
-        @if (Auth::user()->role == 'superadmin' || Auth::user()->role == 'admin')
+<body>
+    <div id="app">
+        <div class="main-wrapper main-wrapper-1">
+            <div class="navbar-bg"></div>
+
+            {{-- topbar --}}
+            @include('backend.partial.topbar')
+
+            {{-- sidebar --}}
             @include('backend.partial.sidebar')
-        @endif
-        <!-- Sidebar -->
-        <div id="content-wrapper" class="d-flex flex-column">
-            <div id="content">
-                <!-- TopBar -->
-                @include('backend.partial.topbar')
-                <!-- Topbar -->
 
-                <!-- Container Fluid-->
-                <div class="container-fluid" id="container-wrapper">
-                    @yield('content')
+            <!-- Main Content -->
+            <div class="main-content">
+                <section class="section">
+                    <div class="section-header">
+                    </div>
 
-                </div>
-                <!---Container Fluid-->
+                    <div class="section-body">
+                        @yield('content')
+                    </div>
+                </section>
             </div>
-            <!-- Footer -->
+            {{-- footer --}}
             @include('backend.partial.footer')
-            <!-- Footer -->
         </div>
     </div>
 
-    <!-- Scroll to top -->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
+    <!-- General JS Scripts -->
+    <script src="{{ asset('backend/stisla/assets/modules/jquery.min.js') }}"></script>
+    <script src="{{ asset('backend/stisla/assets/modules/popper.js') }}"></script>
+    <script src="{{ asset('backend/stisla/assets/modules/tooltip.js') }}"></script>
+    <script src="{{ asset('backend/stisla/assets/modules/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('backend/stisla/assets/modules/nicescroll/jquery.nicescroll.min.js') }}"></script>
+    <script src="{{ asset('backend/stisla/assets/modules/moment.min.js') }}"></script>
+    <script src="{{ asset('backend/stisla/assets/js/stisla.js') }}"></script>
 
-    <script src="{{ asset('backend/vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('backend/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('backend/vendor/jquery-easing/jquery.easing.min.js') }}"></script>
-    <script src="{{ asset('backend/js/ruang-admin.min.js') }}"></script>
+    <!-- JS Libraies -->
+
+    <!-- Page Specific JS File -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @yield('js')
 
+    <!-- Template JS File -->
+    <script src="{{ asset('backend/stisla/assets/js/scripts.js') }}"></script>
+    <script src="{{ asset('backend/stisla/assets/js/custom.js') }}"></script>
+    @yield('js')
 </body>
 
 </html>
