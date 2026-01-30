@@ -86,7 +86,10 @@
                                 <td>{{ $g->number_phone }}</td>
                                 <td>{{ $g->agency->agency_name }}</td>
                                 <td>{{ $g->objective }}</td>
-                                <td>{{ $g->arrival_time }}</td>
+                                <td><span class="badge badge-success">
+                                        {{ $g->arrival_time }}
+                                    </span>
+                                </td>
 
                                 {{-- JAM PULANG --}}
                                 <td>
@@ -95,7 +98,7 @@
                                             {{ $g->departure_time }}
                                         </span>
                                     @else
-                                        <span class="badge badge-secondary">
+                                        <span class="badge badge-warning">
                                             On Progress
                                         </span>
                                     @endif
