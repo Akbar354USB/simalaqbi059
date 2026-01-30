@@ -64,6 +64,19 @@ Route::middleware('auth', 'ChekRole:superadmin,ppnpn')->group(function () {
     Route::post('/attendance/store', [AttendaceController::class, 'store'])->name('attendance.store');
 });
 
+Route::middleware('auth', 'ChekRole:superadmin,resepsionis')->group(function () {
+    //route buku tamu
+    Route::get('/guest_book/index', [GuestBookController::class, 'index'])->name('guest_book_index');
+    Route::get('/guest_book/create', [GuestBookController::class, 'create'])->name('guest_book_create');
+    Route::post('/guest_book', [GuestBookController::class, 'store'])->name('guest_book_store');
+    Route::get('/guest_book/{id}/edit', [GuestBookController::class, 'edit'])->name('guest_book_edit');
+    Route::put('/guest_book/{id}', [GuestBookController::class, 'update'])->name('guest_book_update');
+    Route::delete('/guest_book/{id}', [GuestBookController::class, 'destroy'])->name('guest_book_destroy');
+    Route::get('/guest-book/print/pdf', [GuestBookController::class, 'printPdf'])
+        ->name('guest_book_print_pdf');
+    Route::post('/guest-book/{id}/departure', [GuestBookController::class, 'updateDepartureTime'])->name('guest_book.departure');
+});
+
 Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     // Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
@@ -95,16 +108,6 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
             'progress' => $kategori->progress()
         ]);
     });
-
-    //route buku tamu
-    Route::get('/guest_book/index', [GuestBookController::class, 'index'])->name('guest_book_index');
-    Route::get('/guest_book/create', [GuestBookController::class, 'create'])->name('guest_book_create');
-    Route::post('/guest_book', [GuestBookController::class, 'store'])->name('guest_book_store');
-    Route::get('/guest_book/{id}/edit', [GuestBookController::class, 'edit'])->name('guest_book_edit');
-    Route::put('/guest_book/{id}', [GuestBookController::class, 'update'])->name('guest_book_update');
-    Route::delete('/guest_book/{id}', [GuestBookController::class, 'destroy'])->name('guest_book_destroy');
-    Route::get('/guest-book/print/pdf', [GuestBookController::class, 'printPdf'])
-        ->name('guest_book_print_pdf');
 
     //data google Account
     Route::get('/google-accounts', [GoogleAccountController::class, 'index'])->name('google-accounts.index');

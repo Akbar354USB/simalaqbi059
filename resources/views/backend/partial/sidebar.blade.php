@@ -31,6 +31,10 @@
                     <li><a href="{{ route('attendances.data') }}">Data Absensi PPNPN</a></li>
                 </ul>
             </li>
+            <li><a class="nav-link" href="{{ route('guest_book_index') }}"><i class="fas fa-clipboard"></i>
+
+                    <span>Buku Tamu</span></a>
+            </li>
             <li class="dropdown">
                 <a href="#" class="nav-link has-dropdown"><i class="fas fa-bell"></i>
                     <span>Reminder Hadirku059</span></a>

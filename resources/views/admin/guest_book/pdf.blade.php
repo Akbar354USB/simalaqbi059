@@ -1,83 +1,27 @@
-{{-- <!DOCTYPE html>
-<html>
-
-<head>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-        }
-
-        th,
-        td {
-            border: 1px solid #000;
-            padding: 6px;
-            text-align: left;
-        }
-
-        th {
-            background: #eaeaea;
-        }
-    </style>
-</head>
-
-<body>
-    <h3 style="text-align: center;">Laporan Buku Tamu</h3>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Nama Tamu</th>
-                <th>Nomor HP</th>
-                <th>Instansi</th>
-                <th>Tujuan</th>
-                <th>Jam Datang</th>
-                <th>Pegawai Ditemui</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach ($data as $g)
-                <tr>
-                    <td>{{ $g->guest_name }}</td>
-                    <td>{{ $g->number_phone }}</td>
-                    <td>{{ $g->agency }}</td>
-                    <td>{{ $g->objective }}</td>
-                    <td>{{ $g->arrival_time }}</td>
-                    <td>
-                        @foreach ($g->employees as $emp)
-                            {{ $emp->employee_name }} <br>
-                        @endforeach
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-
-    </table>
-
-</body>
-
-</html> --}}
-
 <!DOCTYPE html>
 <html>
 
 <head>
     <style>
+        /* ================= GLOBAL ================= */
         body {
             font-family: Arial, sans-serif;
+            font-size: 11px;
+            /* DEFAULT 11 */
+            line-height: 1.2;
+            margin: 5px 10px 10px 10px;
+            /* MARGIN ATAS DIPERKECIL */
         }
 
-        /* Tabel kop tanpa border */
+        /* ================= KOP SURAT ================= */
         .kop-table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 5px;
         }
 
         .kop-table td {
             border: none !important;
-            /* border: 1px solid #000; */
             padding: 0;
             margin: 0;
             vertical-align: top;
@@ -85,58 +29,114 @@
 
         .kop-logo {
             width: 100px;
-            margin-top: 8px;
-            margin-left: 80;
-            padding-left: 1px;
-            /* naikkan sedikit */
+            margin-top: 5px;
+            margin-left: 80px;
         }
-
-        /* .kop-text {
-            text-align: center;
-            font-size: 13px;
-            font-weight: bold;
-            line-height: 1.2;
-            padding-left: -20px;
-        } */
 
         .kop-text {
             text-align: center;
             font-size: 13px;
+            /* KOP TETAP LEBIH BESAR */
             font-weight: bold;
             line-height: 1.2;
             transform: translateX(-20px);
         }
 
-
         .subtext {
             font-size: 11px;
+            /* SUB KOP BOLEH 11 */
             font-weight: normal;
+            line-height: 1.2;
         }
 
         hr.garis-tebal {
             border: 2px solid #000;
-            margin-top: 5px;
-            margin-bottom: 15px;
+            margin: 4px 0 10px 0;
+            /* RAPAT KE ATAS */
         }
 
-        table {
+        /* ================= JUDUL ================= */
+        h3 {
+            font-size: 11px;
+            /* SESUAI PERMINTAAN */
+            font-weight: bold;
+            text-align: center;
+            margin: 4px 0 6px 0;
+        }
+
+        p {
+            font-size: 11px;
+            margin: 0 0 6px 0;
+        }
+
+        /* ================= TABEL DATA ================= */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 11px;
+            table-layout: fixed;
         }
 
-        th,
-        td {
+        .data-table th,
+        .data-table td {
             border: 1px solid #000;
-            padding: 6px;
-            text-align: left;
+            padding: 3px 4px;
+            /* CELL RAPAT */
+            vertical-align: top;
+            line-height: 1.15;
+            word-wrap: break-word;
+            word-break: break-word;
         }
 
-        th {
+        .data-table th {
             background: #eaeaea;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* ================= KOLOM ================= */
+        .col-no {
+            width: 4%;
+            text-align: center;
+        }
+
+        .col-tgl {
+            width: 9%;
+            text-align: center;
+        }
+
+        .col-nama {
+            width: 15%;
+        }
+
+        .col-hp {
+            width: 11%;
+            text-align: center;
+        }
+
+        .col-instansi {
+            width: 15%;
+        }
+
+        .col-keperluan {
+            width: 21%;
+        }
+
+        .col-pegawai {
+            width: 25%;
+        }
+
+        .pegawai-item {
+            display: block;
+            line-height: 1.1;
+        }
+
+        /* ================= TANDA TANGAN ================= */
+        .ttd {
+            font-size: 11px;
+            line-height: 1.2;
         }
     </style>
-
 </head>
 
 <body>
@@ -144,12 +144,10 @@
     <!-- ====================== KOP SURAT ====================== -->
     <table class="kop-table">
         <tr>
-            <!-- LOGO -->
             <td style="width:20%">
                 <img src="{{ public_path('backend/kop.png') }}" class="kop-logo">
             </td>
 
-            <!-- TEKS KOP SURAT -->
             <td class="kop-text" style="width:70%">
                 KEMENTERIAN KEUANGAN REPUBLIK INDONESIA <br>
                 DIREKTORAT JENDERAL PERBENDAHARAAN <br>
@@ -167,67 +165,80 @@
 
     <hr class="garis-tebal">
 
-    <!-- JUDUL LAPORAN -->
-    <h3 style="text-align: center; margin-bottom: 10px;">Laporan Buku Tamu</h3>
+    <!-- ================= JUDUL ================= -->
+    <h3>Laporan Buku Tamu</h3>
 
-    <p style="text-align: left; font-size: 12px; margin-bottom: 12px;">
+    <p>
         <b>Data:</b> {{ $filterText }}
     </p>
+
     <!-- ====================== TABEL DATA ====================== -->
-    <table>
+    <table class="data-table">
         <thead>
             <tr>
-                <th style="text-align: center">No</th>
-                <th style="text-align: center">Tanggal</th>
-                <th style="text-align: center">Nama Tamu</th>
-                <th style="text-align: center">Nomor HP</th>
-                <th style="text-align: center">Instansi</th>
-                <th style="text-align: center">Tujuan</th>
-                <th style="text-align: center">Jam Datang</th>
-                <th style="text-align: center">Pegawai Ditemui</th>
+                <th class="col-no">No</th>
+                <th class="col-tgl">Tanggal</th>
+                <th class="col-nama">Nama Tamu</th>
+                <th class="col-hp">Nomor HP</th>
+                <th class="col-instansi">Instansi</th>
+                <th class="col-keperluan">Keperluan</th>
+                <th class="col-pegawai">Pegawai Ditemui</th>
+                <th class="col-hp">Waktu Datang</th>
+                <th class="col-hp">Waktu Pulang</th>
+                <th class="col-hp">Durasi Layanan</th>
             </tr>
         </thead>
-
         <tbody>
             @foreach ($data as $key => $g)
                 <tr>
-                    <td style="text-align: center">{{ $key + 1 }}</td>
-                    <td style="text-align: center">{{ \Carbon\Carbon::parse($g->created_at)->format('d/m/Y') }}</td>
-                    <td>{{ $g->guest_name }}</td>
-                    <td style="text-align: center">{{ $g->number_phone }}</td>
-                    <td>{{ $g->agency->agency_name }}</td>
-                    <td>{{ $g->objective }}</td>
-                    <td style="text-align: center">{{ $g->arrival_time }}</td>
-                    <td>
+                    <td class="col-no">{{ $key + 1 }}</td>
+                    <td class="col-tgl">
+                        {{ \Carbon\Carbon::parse($g->created_at)->format('d/m/Y') }}
+                    </td>
+                    <td class="col-nama">{{ $g->guest_name }}</td>
+                    <td class="col-hp">{{ $g->number_phone }}</td>
+                    <td class="col-instansi">{{ $g->agency->agency_name }}</td>
+                    <td class="col-keperluan">{{ $g->objective }}</td>
+                    <td class="col-pegawai">
                         @foreach ($g->employees as $emp)
-                            {{ $emp->employee_name }} <br>
+                            <span class="pegawai-item">{{ $emp->employee_name }}</span>
                         @endforeach
                     </td>
+                    <td class="col-hp">{{ $g->arrival_time }}</td>
+                    <td class="col-hp">{{ $g->departure_time }}</td>
+                    <td class="col-hp">
+                        @if ($g->arrival_time && $g->departure_time)
+                            @php
+                                $datang = \Carbon\Carbon::parse($g->arrival_time);
+                                $pulang = \Carbon\Carbon::parse($g->departure_time);
+                                $durasi = $datang->diff($pulang);
+                            @endphp
+
+                            {{ $durasi->h }} jam {{ $durasi->i }} menit
+                        @else
+                            -
+                        @endif
+                    </td>
+
                 </tr>
             @endforeach
         </tbody>
     </table>
 
-    <!-- ================== TANDA TANGAN + TANGGAL ================== -->
-
-    <br><br>
-    <table style="width: 100%; border: none; margin-top: 20px;">
+    <!-- ================== TANDA TANGAN ================== -->
+    <br>
+    <table style="width:100%; border:none;">
         <tr>
-            <td style="width: 75%; border: none;"></td>
-            <td style="width: 25%; border: none; text-align: left;">
-
-                {{-- Majene, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }} <br> --}}
+            <td style="width:75%; border:none;"></td>
+            <td class="ttd" style="width:25%; border:none;">
                 Majene, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }} <br>
                 Mengetahui, <br>
-                Kepala Subbagian umum <br><br><br><br><br><br><br>
+                Kepala Subbagian Umum <br><br><br><br>
 
-                {{-- Jika punya file tanda tangan png, aktifkan baris ini --}}
-                {{-- <img src="{{ public_path('ttd_kepala.png') }}" width="120"> --}}
-                <span style="color: #777; font-size: 12px;">
+                <span style="color:#777;">
                     Ditandatangani secara elektronik
-                </span>
-                <br>
-                <b><u>Hendrik Gusti Toding Rante</u></b> <br>
+                </span><br>
+                <b><u>Hendrik Gusti Toding Rante</u></b>
             </td>
         </tr>
     </table>

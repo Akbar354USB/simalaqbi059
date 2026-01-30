@@ -74,6 +74,10 @@ class LoginController extends Controller
             return redirect()->route('attendance.index');
         }
 
+        if ($user->role === 'resepsionis') {
+            return redirect()->route('guest_book_create');
+        }
+
         // 👤 USER BIASA
         return redirect()->route('redirect.tamu');
     }

@@ -7,6 +7,8 @@ use App\Models\Employee;
 use App\Models\GuestBook;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 // use Barryvdh\DomPDF\Facade\Pdf;
 
 class GuestBookController extends Controller
@@ -85,6 +87,8 @@ class GuestBookController extends Controller
             ->with('success', 'Data tamu berhasil disimpan.');
     }
 
+
+
     public function printPdf(Request $request)
     {
         $guestBooks = GuestBook::with(['employees', 'agency'])->latest();
@@ -127,8 +131,19 @@ class GuestBookController extends Controller
 
 
         // AMBIL DATA
-        $data = $guestBooks->get();
+        // $data = $guestBooks->get();
+        $data = $guestBooks->get()->map(function ($g) {
+            if ($g->arrival_time && $g->departure_time) {
+                $datang = \Carbon\Carbon::parse($g->arrival_time);
+                $pulang = \Carbon\Carbon::parse($g->departure_time);
 
+                $g->durasi_layanan = $datang->diff($pulang)->format('%H jam %I menit');
+            } else {
+                $g->durasi_layanan = '-';
+            }
+
+            return $g;
+        });
 
         // ==============================
         // NAMA FILE BERDASARKAN FILTER
@@ -204,5 +219,25 @@ class GuestBookController extends Controller
 
         return redirect()->route('guest_book_index')
             ->with('success', 'Data tamu berhasil dihapus.');
+    }
+
+    public function updateDepartureTime(Request $request, $id)
+    {
+        $request->validate([
+            'departure_time' => 'required'
+        ]);
+
+        $guest = GuestBook::findOrFail($id);
+
+        // proteksi: tidak bisa update 2x
+        if ($guest->departure_time) {
+            return back()->with('success', 'Jam pulang sudah diisi');
+        }
+
+        $guest->update([
+            'departure_time' => $request->departure_time
+        ]);
+
+        return back()->with('success', 'Jam pulang berhasil ditambahkan');
     }
 }

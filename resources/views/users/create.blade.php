@@ -28,6 +28,7 @@
                             <option value="admin">admin</option>
                             <option value="pegawai">pegawai</option>
                             <option value="ppnpn">ppnpn</option>
+                            <option value="resepsionis">resepsionis</option>
                         </select>
                     </div>
 

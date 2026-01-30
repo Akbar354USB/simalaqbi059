@@ -1,4 +1,8 @@
-@extends('master')
+@php
+    $layout = in_array(auth()->user()->role, ['admin', 'superadmin']) ? 'master' : 'master-no-sidebar';
+@endphp
+
+@extends($layout)
 
 @section('css')
     <style>

@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->string('objective');
             $table->time('arrival_time')->nullable(); // bisa nullable jika tidak wajib diisi
+            $table->time('departure_time')->nullable();
             $table->timestamps();
         });
     }
