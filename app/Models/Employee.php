@@ -62,11 +62,6 @@ class Employee extends Model
         return $this->hasMany(AdditionalLeave::class);
     }
 
-    public function faces()
-    {
-        return $this->hasMany(EmployeeFace::class);
-    }
-
     public function workUnitsLed()
     {
         return $this->hasMany(WorkUnit::class, 'employee_id');
