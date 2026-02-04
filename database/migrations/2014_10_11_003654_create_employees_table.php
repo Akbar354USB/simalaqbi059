@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
             $table->string('employee_name');
+            $table->string('nip')->nullable(); // ✅ hanya untuk PNS
             $table->string('email')->unique();
             $table->enum('status', ['PNS', 'PPNPN']);
             $table->boolean('is_active')->default(true);

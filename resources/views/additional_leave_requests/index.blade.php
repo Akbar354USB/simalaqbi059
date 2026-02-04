@@ -4,7 +4,9 @@
     <div class="container-fluid">
         <div class="card shadow-sm">
             <div class="card-header py-3">
-                <h5 class="m-0 font-weight-bold text-primary">Data Pengajuan Cuti Tambahan</h5>
+                <h5 class="m-0 font-weight-bold text-primary">
+                    Data Pengajuan Cuti Tambahan
+                </h5>
             </div>
 
             <div class="card-body">
@@ -12,18 +14,17 @@
                     + Pengajuan Cuti Tambahan
                 </a>
 
-                {{-- FILTER & SEARCH --}}
+                {{-- FILTER --}}
                 <div class="card border mb-4">
                     <div class="card-body p-3">
                         <form method="GET" action="{{ route('additional-leave-requests.index') }}">
                             <div class="form-row align-items-end">
-
                                 <div class="col-md-4">
                                     <label class="small font-weight-bold">
                                         <i class="fas fa-search"></i> Kata Kunci
                                     </label>
                                     <input type="text" name="keyword" class="form-control"
-                                        placeholder="Nama / NIP / No Surat" value="{{ request('keyword') }}">
+                                        value="{{ request('keyword') }}" placeholder="Nama / NIP / No Surat">
                                 </div>
 
                                 <div class="col-md-3">
@@ -46,35 +47,35 @@
                                     <button class="btn btn-primary w-100 mr-1">
                                         <i class="fas fa-search"></i>
                                     </button>
-
                                     <a href="{{ route('additional-leave-requests.index') }}"
                                         class="btn btn-outline-secondary w-100">
                                         <i class="fas fa-sync"></i>
                                     </a>
                                 </div>
-
                             </div>
                         </form>
                     </div>
                 </div>
+
+                {{-- TABLE --}}
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover">
-                        <thead>
-                            <tr class="table-light text-center">
+                        <thead class="table-light text-center">
+                            <tr>
                                 <th>Nama</th>
                                 <th>NIP</th>
                                 <th>Waktu Cuti</th>
                                 <th>No Surat</th>
-                                <th>Aksi</th>
+                                <th>Status</th>
+                                <th width="180">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($requests as $item)
                                 <tr class="text-center">
-                                    <td>{{ $item->employee_name }}</td>
-                                    <td>{{ $item->nip }}</td>
+                                    <td>{{ $item->employee->employee_name }}</td>
+                                    <td>{{ $item->employee->nip ?? '-' }}</td>
 
-                                    {{-- WAKTU CUTI MULTI PERIODE --}}
                                     <td>
                                         @foreach ($item->periods as $period)
                                             <span class="badge badge-success d-block mb-1">
@@ -89,55 +90,98 @@
                                     <td>{{ $item->letter_number }}</td>
 
                                     <td>
+                                        @switch($item->status)
+                                            @case('pending_unit_head')
+                                                <span class="badge badge-warning">Menunggu Pimpinan Unit</span>
+                                            @break
+
+                                            @case('approved_unit_head')
+                                                <span class="badge badge-info">Disetujui Pimpinan Unit</span>
+                                            @break
+
+                                            @case('approved')
+                                                <span class="badge badge-success">Disetujui</span>
+                                            @break
+
+                                            @case('rejected')
+                                            @case('rejected_unit_head')
+                                                <span class="badge badge-danger">Ditolak</span>
+                                            @break
+                                        @endswitch
+                                    </td>
+
+                                    <td>
                                         <a href="{{ route('additional-leave-requests.show', $item->id) }}"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
                                         </a>
 
-                                        <a href="{{ route('additional-leave-requests.edit', $item->id) }}"
-                                            class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-
                                         <a href="{{ route('additional-leave-requests.print', $item->id) }}" target="_blank"
-                                            class="btn btn-secondary btn-sm" title="Cetak PDF">
+                                            class="btn btn-secondary btn-sm">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
 
+                                        {{-- 🔥 TOMBOL HAPUS SELALU TAMPIL --}}
                                         <form action="{{ route('additional-leave-requests.destroy', $item->id) }}"
-                                            method="POST" class="d-inline">
+                                            method="POST" class="d-inline delete-form">
                                             @csrf
                                             @method('DELETE')
-                                            <button onclick="return confirm('Hapus data?')" class="btn btn-danger btn-sm">
+                                            <button type="button" class="btn btn-danger btn-sm btn-delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">
-                                        Belum ada pengajuan cuti
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">
+                                            Belum ada pengajuan cuti
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
-    </div>
-@endsection
+    @endsection
 
-@section('js')
-    @if (session('success'))
+    @section('js')
+        {{-- ALERT SUKSES --}}
+        @if (session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: "{{ session('success') }}",
+                    confirmButtonColor: '#1cc88a'
+                });
+            </script>
+        @endif
+
+        {{-- SWEETALERT DELETE --}}
         <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: "{{ session('success') }}",
-                confirmButtonColor: '#1cc88a'
+            document.querySelectorAll('.btn-delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const form = this.closest('form');
+
+                    Swal.fire({
+                        title: 'Yakin ingin menghapus?',
+                        text: 'Data yang dihapus tidak dapat dikembalikan',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e74a3b',
+                        cancelButtonColor: '#858796',
+                        confirmButtonText: 'Ya, hapus',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
             });
         </script>
-    @endif
-@endsection
+    @endsection

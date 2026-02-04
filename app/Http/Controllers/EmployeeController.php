@@ -22,22 +22,23 @@ class EmployeeController extends Controller
     {
         $request->validate([
             'employee_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:employees,email',
-            'status' => 'required|in:PNS,PPNPN',
+            'email'         => 'required|email|unique:employees,email',
+            'status'        => 'required|in:PNS,PPNPN',
+            'nip'           => 'nullable|required_if:status,PNS|unique:employees,nip',
         ]);
-
-        // dd($request);
 
         Employee::create([
             'employee_name' => $request->employee_name,
-            'email' => $request->email,
-            'status' => $request->status,
-            'is_active' => $request->has('is_active'),
+            'nip'           => $request->status === 'PNS' ? $request->nip : null,
+            'email'         => $request->email,
+            'status'        => $request->status,
+            'is_active'     => $request->has('is_active'),
         ]);
 
         return redirect()->route('employees.index')
             ->with('success', 'Data pegawai berhasil ditambahkan');
     }
+
 
     public function edit(Employee $employee)
     {
@@ -49,6 +50,7 @@ class EmployeeController extends Controller
         $request->validate([
             'employee_name' => 'required|string|max:255',
             'email' => 'required|email|unique:employees,email,' . $employee->id,
+            'nip'           => 'nullable|required_if:status,PNS|unique:employees,nip,' . $employee->id,
             'status' => 'required|in:PNS,PPNPN',
         ]);
 
@@ -56,6 +58,7 @@ class EmployeeController extends Controller
             'employee_name' => $request->employee_name,
             'email' => $request->email,
             'status' => $request->status,
+            'nip'           => $request->status === 'PNS' ? $request->nip : null,
             'is_active' => $request->has('is_active'),
         ]);
 

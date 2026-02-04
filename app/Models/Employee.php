@@ -12,6 +12,7 @@ class Employee extends Model
     use HasFactory;
     protected $fillable = [
         'employee_name',
+        'nip',
         'email',
         'status',
         'is_active',
@@ -64,5 +65,10 @@ class Employee extends Model
     public function faces()
     {
         return $this->hasMany(EmployeeFace::class);
+    }
+
+    public function workUnitsLed()
+    {
+        return $this->hasMany(WorkUnit::class, 'employee_id');
     }
 }

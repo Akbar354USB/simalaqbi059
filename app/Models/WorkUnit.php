@@ -11,9 +11,13 @@ class WorkUnit extends Model
 
     protected $fillable = [
         'work_unit',
-        'leader_name',
-        'leader_nip',
+        'employee_id',
     ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
+    }
 
     public function additionalLeaveRequests()
     {

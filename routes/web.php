@@ -21,6 +21,8 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\WorkShiftController;
 use App\Http\Controllers\WorkUnitController;
 use App\Http\Controllers\EmployeeFaceController;
+use App\Http\Controllers\HeadOfficeApprovalController;
+use App\Http\Controllers\UnitHeadApprovalController;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -54,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('redirect.tamu');
 });
 
-Route::middleware(['auth', 'ChekRole:superadmin', 'google.connected'])->group(function () {
+Route::middleware(['auth', 'ChekRole:superadmin,unit_head,head_office,pegawai', 'google.connected'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])
         ->name('home');
 });
@@ -77,8 +79,40 @@ Route::middleware('auth', 'ChekRole:superadmin,resepsionis')->group(function () 
     Route::post('/guest-book/{id}/departure', [GuestBookController::class, 'updateDepartureTime'])->name('guest_book.departure');
 });
 
-Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
-    // Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::middleware(['auth', 'ChekRole:unit_head'])->group(function () {
+
+    Route::get('/approval/unit-head', [UnitHeadApprovalController::class, 'index'])->name('unit-head.approvals.index');
+    Route::post('/approval/unit-head/{id}/approve', [UnitHeadApprovalController::class, 'approve'])->name('unit-head.approvals.approve');
+    Route::post('/approval/unit-head/{id}/reject', [UnitHeadApprovalController::class, 'reject'])->name('unit-head.approvals.reject');
+});
+
+Route::middleware(['auth', 'ChekRole:head_office'])->group(function () {
+    Route::get('/approval/head-office', [HeadOfficeApprovalController::class, 'index'])->name('head-office.approvals.index');
+    Route::post('/approval/head-office/{id}/approve', [HeadOfficeApprovalController::class, 'approve'])->name('head-office.approvals.approve');
+    Route::post('/approval/head-office/{id}/reject', [HeadOfficeApprovalController::class, 'reject'])->name('head-office.approvals.reject');
+});
+
+Route::middleware('auth', 'ChekRole:superadmin,unit_head,head_office,pegawai')->group(function () {
+    /*Additional Leave Request Routes*/
+    Route::get(
+        '/additional-leave-requests',
+        [AdditionalLeaveRequestController::class, 'index']
+    )->name('additional-leave-requests.index');
+    Route::get('/cuti/riwayat', [AdditionalLeaveRequestController::class, 'history'])
+        ->name('additional-leave-requests.history');
+    Route::get(
+        '/additional-leave-requests/create',
+        [AdditionalLeaveRequestController::class, 'create']
+    )->name('additional-leave-requests.create');
+    Route::post(
+        '/additional-leave-requests',
+        [AdditionalLeaveRequestController::class, 'store']
+    )->name('additional-leave-requests.store');
+    Route::get('/additional-leave-requests/{additionalLeaveRequest}', [AdditionalLeaveRequestController::class, 'show'])->name('additional-leave-requests.show');
+    Route::get('/additional-leave-requests/{additionalLeaveRequest}/edit', [AdditionalLeaveRequestController::class, 'edit'])->name('additional-leave-requests.edit');
+    Route::put('/additional-leave-requests/{additionalLeaveRequest}', [AdditionalLeaveRequestController::class, 'update'])->name('additional-leave-requests.update');
+    Route::delete('/additional-leave-requests/{additionalLeaveRequest}', [AdditionalLeaveRequestController::class, 'destroy'])->name('additional-leave-requests.destroy');
+
     Route::get('/employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::get('/employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('/employees', [EmployeeController::class, 'store'])->name('employees.store');
@@ -108,7 +142,11 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
             'progress' => $kategori->progress()
         ]);
     });
+});
 
+
+
+Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     //data google Account
     Route::get('/google-accounts', [GoogleAccountController::class, 'index'])->name('google-accounts.index');
     Route::delete('/google-accounts/{googleAccount}', [GoogleAccountController::class, 'destroy'])->name('google-accounts.destroy');
@@ -152,28 +190,6 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     Route::get('/work-shifts/{workShift}/edit', [WorkShiftController::class, 'edit'])->name('work-shifts.edit');
     Route::put('/work-shifts/{workShift}', [WorkShiftController::class, 'update'])->name('work-shifts.update');
     Route::delete('/work-shifts/{workShift}', [WorkShiftController::class, 'destroy'])->name('work-shifts.destroy');
-
-
-
-    /*Additional Leave Request Routes*/
-
-    // 1. Tampilkan semua data
-    Route::get(
-        '/additional-leave-requests',
-        [AdditionalLeaveRequestController::class, 'index']
-    )->name('additional-leave-requests.index');
-    Route::get(
-        '/additional-leave-requests/create',
-        [AdditionalLeaveRequestController::class, 'create']
-    )->name('additional-leave-requests.create');
-    Route::post(
-        '/additional-leave-requests',
-        [AdditionalLeaveRequestController::class, 'store']
-    )->name('additional-leave-requests.store');
-    Route::get('/additional-leave-requests/{additionalLeaveRequest}', [AdditionalLeaveRequestController::class, 'show'])->name('additional-leave-requests.show');
-    Route::get('/additional-leave-requests/{additionalLeaveRequest}/edit', [AdditionalLeaveRequestController::class, 'edit'])->name('additional-leave-requests.edit');
-    Route::put('/additional-leave-requests/{additionalLeaveRequest}', [AdditionalLeaveRequestController::class, 'update'])->name('additional-leave-requests.update');
-    Route::delete('/additional-leave-requests/{additionalLeaveRequest}', [AdditionalLeaveRequestController::class, 'destroy'])->name('additional-leave-requests.destroy');
 
     /*Additional Leaves Routes*/
     Route::get('/additional-leaves', [AdditionalLeaveController::class, 'index'])->name('additional-leaves.index');

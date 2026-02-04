@@ -14,7 +14,7 @@
                 <div class="row mb-3">
                     <div class="col-md-4 text-muted font-weight-bold">Nama Pegawai</div>
                     <div class="col-md-8">
-                        {{ $additionalLeaveRequest->employee_name }}
+                        {{ $additionalLeaveRequest->employee->employee_name }}
                     </div>
                 </div>
 
@@ -22,7 +22,23 @@
                 <div class="row mb-3">
                     <div class="col-md-4 text-muted font-weight-bold">NIP</div>
                     <div class="col-md-8">
-                        {{ $additionalLeaveRequest->nip }}
+                        {{ $additionalLeaveRequest->employee->nip ?? '-' }}
+                    </div>
+                </div>
+
+                {{-- JABATAN --}}
+                <div class="row mb-3">
+                    <div class="col-md-4 text-muted font-weight-bold">Jabatan</div>
+                    <div class="col-md-8">
+                        {{ $additionalLeaveRequest->position }}
+                    </div>
+                </div>
+
+                {{-- UNIT KERJA --}}
+                <div class="row mb-3">
+                    <div class="col-md-4 text-muted font-weight-bold">Unit Kerja</div>
+                    <div class="col-md-8">
+                        {{ $additionalLeaveRequest->workUnit->work_unit }}
                     </div>
                 </div>
 
@@ -54,7 +70,7 @@
                     </div>
                 </div>
 
-                {{-- TOTAL HARI CUTI (OPSIONAL) --}}
+                {{-- TOTAL HARI --}}
                 <div class="row mb-3">
                     <div class="col-md-4 text-muted font-weight-bold">Total Hari Cuti</div>
                     <div class="col-md-8">
@@ -63,24 +79,51 @@
                 </div>
 
                 {{-- NOMOR SURAT --}}
-                <div class="row mb-4">
+                <div class="row mb-3">
                     <div class="col-md-4 text-muted font-weight-bold">Nomor Surat</div>
                     <div class="col-md-8">
-                        {{ $additionalLeaveRequest->letter_number ?? '-' }}
+                        {{ $additionalLeaveRequest->letter_number }}
+                    </div>
+                </div>
+
+                {{-- STATUS --}}
+                <div class="row mb-4">
+                    <div class="col-md-4 text-muted font-weight-bold">Status Pengajuan</div>
+                    <div class="col-md-8">
+                        @switch($additionalLeaveRequest->status)
+                            @case('pending_unit_head')
+                                <span class="badge badge-warning">Menunggu Pimpinan Unit</span>
+                            @break
+
+                            @case('approved_unit_head')
+                                <span class="badge badge-info">Disetujui Pimpinan Unit</span>
+                            @break
+
+                            @case('approved')
+                                <span class="badge badge-success">Disetujui Kepala Kantor</span>
+                            @break
+
+                            @case('rejected')
+                            @case('rejected_unit_head')
+                                <span class="badge badge-danger">Ditolak</span>
+                            @break
+                        @endswitch
                     </div>
                 </div>
 
                 <hr>
 
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('additional-leave-requests.index') }}" class="btn btn-secondary">
+                    <a href="{{ redirect()->back()->getTargetUrl() }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Kembali
                     </a>
 
-                    <a href="{{ route('additional-leave-requests.edit', $additionalLeaveRequest->id) }}"
-                        class="btn btn-warning">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
+                    @if ($additionalLeaveRequest->status === 'pending_unit_head')
+                        <a href="{{ route('additional-leave-requests.edit', $additionalLeaveRequest->id) }}"
+                            class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                    @endif
                 </div>
 
             </div>

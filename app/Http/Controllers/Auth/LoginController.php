@@ -64,8 +64,8 @@ class LoginController extends Controller
             return redirect()->route('google.connect', $employee->id);
         }
 
-        // 🔐 SUPERADMIN
-        if ($user->role === 'superadmin') {
+        // 🔐 Role yang diarahkan ke home
+        if (in_array($user->role, ['superadmin', 'unit_head', 'head_office'])) {
             return redirect()->route('home');
         }
 
@@ -74,6 +74,7 @@ class LoginController extends Controller
             return redirect()->route('attendance.index');
         }
 
+        // 🔐 Resepsionis
         if ($user->role === 'resepsionis') {
             return redirect()->route('guest_book_create');
         }

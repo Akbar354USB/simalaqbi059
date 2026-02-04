@@ -10,7 +10,7 @@
         }
 
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: Arial, sans-serif;
             font-size: 11px;
             margin: 0;
             padding: 0;
@@ -150,9 +150,9 @@
         </tr>
         <tr>
             <td width="12%">Nama</td>
-            <td width="38%">{{ $request->employee_name }}</td>
+            <td width="38%">{{ $request->employee->employee_name ?? '-' }}</td>
             <td width="12%">NIP</td>
-            <td width="38%">{{ $request->nip }}</td>
+            <td width="38%">{{ $request->employee->nip ?? '-' }}</td>
         </tr>
         <tr>
             <td>Jabatan</td>
@@ -252,46 +252,60 @@
                 <span style="color: #777; font-size: 12px;">
                     Ditandatangani secara elektronik
                 </span><br>
-                {{ $request->employee_name }} <br>
-                NIP. {{ $request->nip }}
+                {{ $request->employee->employee_name ?? '-' }} <br>
+                NIP. {{ $request->employee->nip ?? '-' }}
             </td>
         </tr>
     </table>
     <br>
     <br>
     <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+
+    @php
+        $approvedByUnitHead = in_array($request->status, ['approved_unit_head', 'approved', 'pending_head_office']);
+
+        $rejectedByUnitHead = in_array($request->status, ['rejected_unit_head']);
+
+        // pengaju adalah pimpinan unit?
+        $isUnitHeadApplicant = $request->workUnit && $request->workUnit->employee_id === $request->employee_id;
+
+        // data pimpinan unit
+        $unitHeadEmployee = $request->workUnit ? $request->workUnit->employee : null;
+    @endphp
     <table>
         <tr>
-            <td class="section-title" colspan="4">VII. PERTIMBANGAN ATASAN LANGSUNG (✓)</td>
+            <td class="section-title" colspan="4">
+                VII. PERTIMBANGAN ATASAN LANGSUNG (<img src="{{ public_path('backend/check.png') }}" width="11"> )
+            </td>
         </tr>
+
         <tr>
             <td width="25%" class="text-center">DISETUJUI</td>
             <td width="25%" class="text-center">PERUBAHAN</td>
             <td width="25%" class="text-center">DITANGGUHKAN</td>
             <td width="25%" class="text-center">TIDAK DISETUJUI</td>
         </tr>
-        <tr>
-            <td class="text-center"><strong>✓</strong></td>
+
+        <tr class="text-center">
+            <td>
+                @if ($approvedByUnitHead)
+                    <img src="{{ public_path('backend/check.png') }}" width="12">
+                @endif
+            </td>
             <td></td>
             <td></td>
-            <td></td>
+            <td>
+                @if ($rejectedByUnitHead || !$approvedByUnitHead)
+                    <img src="{{ public_path('backend/check.png') }}" width="12">
+                @endif
+            </td>
         </tr>
+
         <tr>
             <td style="border:none;"></td>
             <td style="border:none;"></td>
             <td colspan="2" style="padding-left: 20px">
-
-                @if ($request->workUnit && $request->nip === $request->workUnit->leader_nip)
+                @if ($isUnitHeadApplicant)
                     {{-- JIKA PENGAJU = PIMPINAN UNIT --}}
                     Kepala Kantor Pelayanan <br>
                     Perbendaharaan Negara Tipe A2 <br>
@@ -313,42 +327,74 @@
                         Ditandatangani secara elektronik
                     </span><br>
 
-                    {{ $request->workUnit->leader_name ?? '-' }} <br>
-                    NIP. {{ $request->workUnit->leader_nip ?? '-' }}
+                    {{ $unitHeadEmployee->employee_name ?? '-' }} <br>
+                    NIP. {{ $unitHeadEmployee->nip ?? '-' }}
                 @endif
-
             </td>
-
         </tr>
     </table>
     <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
     <table>
         <tr>
-            <td class="section-title" colspan="4">VIII. KEPUTUSAN PEJABAT YANG MEMBERIKAN CUTI (✓)</td>
+            <td class="section-title" colspan="4">
+                VIII. KEPUTUSAN PEJABAT YANG MEMBERIKAN CUTI (<img src="{{ public_path('backend/check.png') }}"
+                    width="11"> )
+            </td>
         </tr>
+
         <tr>
             <td width="25%" class="text-center">DISETUJUI</td>
             <td width="25%" class="text-center">PERUBAHAN</td>
             <td width="25%" class="text-center">DITANGGUHKAN</td>
             <td width="25%" class="text-center">TIDAK DISETUJUI</td>
         </tr>
+
         <tr>
-            <td class="text-center"><strong>✓</strong></td>
+            {{-- DISETUJUI --}}
+            <td class="text-center">
+                @if ($request->status === 'approved')
+                    <img src="{{ public_path('backend/check.png') }}" width="12">
+                @endif
+            </td>
+
+            {{-- PERUBAHAN (DIABAIKAN) --}}
             <td></td>
+
+            {{-- DITANGGUHKAN (DIABAIKAN) --}}
             <td></td>
-            <td></td>
+
+            {{-- TIDAK DISETUJUI --}}
+            <td class="text-center">
+                @if (in_array($request->status, ['rejected', 'pending_head_office']))
+                    <img src="{{ public_path('backend/check.png') }}" width="12">
+                @endif
+            </td>
         </tr>
+
         <tr>
             <td style="border:none;"></td>
             <td style="border:none;"></td>
-            <td colspan="2" style="padding-left: 20px">Kepala Kantor Pelayanan <br>Perbendaharaan Negara Tipe A2
+
+            <td colspan="2" style="padding-left: 20px">
+                Kepala Kantor Pelayanan <br>
+                Perbendaharaan Negara Tipe A2 <br>
                 Majene,
                 <br><br><br><br><br><br>
+
                 <span style="color: #777; font-size: 12px;">
                     Ditandatangani secara elektronik
                 </span><br>
-                Mohammad Taufiq Hidayanto <br>
-                NIP. 197603261996031004
+
+                {{ $headOffice->employee->employee_name ?? '-' }} <br>
+                NIP. {{ $headOffice->employee->nip ?? '-' }}
             </td>
         </tr>
     </table>

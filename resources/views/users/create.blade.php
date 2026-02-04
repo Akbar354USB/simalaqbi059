@@ -25,10 +25,12 @@
                     <div class="mb-3">
                         <label>Role</label>
                         <select name="role" class="form-control" required>
-                            <option value="admin">admin</option>
+                            <option value="superadmin">admin</option>
                             <option value="pegawai">pegawai</option>
                             <option value="ppnpn">ppnpn</option>
                             <option value="resepsionis">resepsionis</option>
+                            <option value="unit_head">Pimpinan Unit/Seksi</option>
+                            <option value="head_office">Kepala Kantor</option>
                         </select>
                     </div>
 

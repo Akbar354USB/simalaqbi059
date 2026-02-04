@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('work_units', function (Blueprint $table) {
             $table->id();
             $table->string('work_unit');
-            $table->string('leader_name');
-            $table->string('leader_nip');
+
+            $table->foreignId('employee_id')   //unit_head (pimpinan)
+                ->constrained('employees')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

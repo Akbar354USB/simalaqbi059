@@ -8,15 +8,17 @@
             </div>
 
             <div class="card-body">
-                <a href="{{ route('employees.create') }}" class="btn btn-primary mb-2">
+                <a href="{{ route('employees.create') }}" class="btn btn-primary mb-3">
                     + Tambah Data Pegawai
                 </a>
+
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped table-hover">
                         <thead class="table-light">
                             <tr class="text-center">
                                 <th width="5%">No</th>
                                 <th>Nama</th>
+                                <th>NIP</th>
                                 <th>Email</th>
                                 <th>Status</th>
                                 <th>Aktif</th>
@@ -29,16 +31,39 @@
                                     <td class="text-center">
                                         {{ $employees->firstItem() + $loop->index }}
                                     </td>
+
                                     <td>{{ $employee->employee_name }}</td>
+
+                                    {{-- NIP --}}
+                                    <td class="text-center">
+                                        @if ($employee->status === 'PNS' && $employee->nip)
+                                            <span class="fw-bold">{{ $employee->nip }}</span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+
                                     <td>{{ $employee->email }}</td>
-                                    <td class="text-center">{{ $employee->status }}</td>
+
+                                    {{-- Status --}}
+                                    <td class="text-center">
+                                        @if ($employee->status === 'PNS')
+                                            <span class="badge bg-success">PNS</span>
+                                        @else
+                                            <span class="badge bg-info text-dark">PPNPN</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- Aktif --}}
                                     <td class="text-center">
                                         @if ($employee->is_active)
-                                            <span class="badge bg-primary text-white">Aktif</span>
+                                            <span class="badge bg-info">Aktif</span>
                                         @else
                                             <span class="badge bg-secondary">Nonaktif</span>
                                         @endif
                                     </td>
+
+                                    {{-- Aksi --}}
                                     <td class="text-center">
                                         <a href="{{ route('employees.edit', $employee->id) }}"
                                             class="btn btn-warning btn-sm">
@@ -57,7 +82,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">
+                                    <td colspan="7" class="text-center text-muted">
                                         Data pegawai belum tersedia
                                     </td>
                                 </tr>
@@ -65,6 +90,8 @@
                         </tbody>
                     </table>
                 </div>
+
+                {{-- Pagination info --}}
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted">
                         Menampilkan {{ $employees->firstItem() }} –
@@ -80,10 +107,8 @@
         </div>
     </div>
 @endsection
-
 @section('js')
-    {{-- SweetAlert Success --}}
-    @if (session('success'))
+    {{-- SweetAlert Success --}} @if (session('success'))
         <script>
             Swal.fire({
                 icon: 'success',
@@ -92,14 +117,11 @@
                 confirmButtonColor: '#1cc88a'
             });
         </script>
-    @endif
-
-    {{-- SweetAlert Delete Confirmation --}}
+    @endif {{-- SweetAlert Delete Confirmation --}}
     <script>
         document.querySelectorAll('.btn-delete').forEach(button => {
             button.addEventListener('click', function() {
                 const form = this.closest('form');
-
                 Swal.fire({
                     title: 'Yakin?',
                     text: 'Data pegawai akan dihapus permanen!',
