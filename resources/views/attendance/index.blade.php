@@ -1,4 +1,8 @@
-@extends('master')
+@php
+    $layout = in_array(auth()->user()->role, ['admin', 'superadmin']) ? 'master' : 'master-no-sidebar';
+@endphp
+
+@extends($layout)
 
 @section('content')
     <div class="container-fluid">
@@ -15,19 +19,37 @@
                 </div>
                 <div id="clock" class="mb-2 text-primary fw-bold"></div>
 
-                <select id="shift" class="form-control mb-2">
-                    <option value="">-- Pilih Shift --</option>
-                    @foreach ($shifts as $shift)
-                        <option value="{{ $shift->id }}">
-                            {{ $shift->shift_name }} ({{ $shift->start_time }} - {{ $shift->end_time }})
-                        </option>
-                    @endforeach
-                </select>
+                @php
+                    $isCheckIn = $attendanceToday && $attendanceToday->check_in_time;
+                @endphp
 
-                <select id="type" class="form-control mb-2">
-                    <option value="DATANG">Datang</option>
-                    <option value="PULANG">Pulang</option>
-                </select>
+                {{-- SHIFT --}}
+                @if (!$isCheckIn)
+                    {{-- PRESENSI DATANG --}}
+                    <select id="shift" class="form-control mb-2">
+                        <option value="">-- Pilih Shift --</option>
+                        @foreach ($shifts as $shift)
+                            <option value="{{ $shift->id }}">
+                                {{ $shift->shift_name }}
+                                ({{ \Carbon\Carbon::parse($shift->start_time)->format('H:i') }} -
+                                {{ \Carbon\Carbon::parse($shift->end_time)->format('H:i') }})
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    {{-- PRESENSI PULANG (SHIFT TERKUNCI) --}}
+                    <input type="hidden" id="shift" value="{{ $attendanceToday->work_shift_id }}">
+
+                    <div class="alert alert-info mb-2">
+                        <strong>Shift:</strong>
+                        {{ $attendanceToday->workShift->shift_name }}
+                        ({{ \Carbon\Carbon::parse($attendanceToday->workShift->start_time)->format('H:i') }}
+                        -
+                        {{ \Carbon\Carbon::parse($attendanceToday->workShift->end_time)->format('H:i') }})
+                        <br>
+                        <small class="text-muted">Shift otomatis dikunci</small>
+                    </div>
+                @endif
 
                 <video id="video" width="100%" autoplay class="border mb-2"></video>
                 <canvas id="canvas" class="d-none"></canvas>
@@ -36,8 +58,8 @@
                     Buka Kamera
                 </button>
 
-                <button class="btn btn-success w-100" onclick="submitAttendance()">
-                    Konfirmasi Absensi
+                <button class="btn btn-success w-100" id="btnSubmit" onclick="submitAttendance()">
+                    {{ $attendanceToday && $attendanceToday->check_in_time ? 'Presensi Pulang' : 'Presensi Datang' }}
                 </button>
             </div>
         </div>
@@ -46,11 +68,13 @@
 
 @section('js')
     <script>
+        const attendanceType = "{{ $attendanceToday && $attendanceToday->check_in_time ? 'PULANG' : 'DATANG' }}";
+
         function showAlert(icon, title, text) {
             Swal.fire({
-                icon: icon,
-                title: title,
-                text: text,
+                icon,
+                title,
+                text,
                 confirmButtonColor: '#4e73df'
             });
         }
@@ -59,42 +83,29 @@
         let longitude = null;
         let stream = null;
 
-        // 🕒 Jam realtime
         setInterval(() => {
             document.getElementById('clock').innerText =
                 new Date().toLocaleString('id-ID');
         }, 1000);
 
-        // 📍 Ambil GPS
-        navigator.geolocation.getCurrentPosition(pos => {
-            latitude = pos.coords.latitude;
-            longitude = pos.coords.longitude;
-        }, err => {
-            showAlert(
-                'warning',
-                'GPS Tidak Aktif',
-                'Silakan aktifkan GPS untuk melanjutkan absensi'
-            );
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                latitude = pos.coords.latitude;
+                longitude = pos.coords.longitude;
+            },
+            () => {
+                showAlert('warning', 'GPS Tidak Aktif', 'Aktifkan GPS untuk melanjutkan');
+            }
+        );
 
-        });
-
-        // 📷 Kamera (realtime only)
         function openCamera() {
-
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                showAlert(
-                    'error',
-                    'Tidak Didukung',
-                    'Browser Anda tidak mendukung akses kamera'
-                );
-
+            if (!navigator.mediaDevices?.getUserMedia) {
+                showAlert('error', 'Tidak Didukung', 'Browser tidak mendukung kamera');
                 return;
             }
 
             navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: 'user'
-                    },
+                    video: true,
                     audio: false
                 })
                 .then(s => {
@@ -103,64 +114,48 @@
                     video.srcObject = s;
                     video.play();
                 })
-                .catch(err => {
-                    console.error(err);
-                    showAlert(
-                        'error',
-                        'Kamera Gagal Dibuka',
-                        'Pastikan izin kamera aktif dan menggunakan HTTPS'
-                    );
-
+                .catch(() => {
+                    showAlert('error', 'Kamera Gagal', 'Pastikan izin kamera aktif & HTTPS');
                 });
         }
 
         function submitAttendance() {
 
             if (!latitude || !longitude) {
-                showAlert(
-                    'warning',
-                    'Lokasi Belum Terbaca',
-                    'Pastikan GPS aktif dan tunggu beberapa detik'
-                );
-
+                showAlert('warning', 'Lokasi Belum Terbaca', 'Aktifkan GPS');
                 return;
             }
 
-            let shift = document.getElementById('shift').value;
+            const shift = document.getElementById('shift').value;
             if (!shift) {
-                showAlert(
-                    'info',
-                    'Shift Belum Dipilih',
-                    'Silakan pilih shift kerja terlebih dahulu'
-                );
+                showAlert('info', 'Shift Belum Dipilih', 'Pilih shift kerja');
+                return;
+            }
 
+            const video = document.getElementById('video');
+            if (!video.srcObject) {
+                showAlert('warning', 'Kamera Belum Aktif', 'Buka kamera dulu');
                 return;
             }
 
             const canvas = document.getElementById('canvas');
-            const video = document.getElementById('video');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
+            canvas.getContext('2d').drawImage(video, 0, 0);
 
             canvas.toBlob(blob => {
-                let formData = new FormData();
+                const formData = new FormData();
                 formData.append('photo', blob, 'absen.jpg');
                 formData.append('latitude', latitude);
                 formData.append('longitude', longitude);
                 formData.append('work_shift_id', shift);
-                formData.append('type', document.getElementById('type').value);
+                formData.append('type', attendanceType);
                 formData.append('_token', '{{ csrf_token() }}');
 
                 Swal.fire({
                     title: 'Mengirim Absensi...',
-                    text: 'Mohon tunggu sebentar',
                     allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
+                    didOpen: () => Swal.showLoading()
                 });
 
                 fetch("{{ route('attendance.store') }}", {
@@ -169,34 +164,17 @@
                     })
                     .then(res => res.json())
                     .then(res => {
-                        let icon = 'success';
-                        let title = 'Berhasil';
-                        let buttonColor = '#1cc88a';
-
-                        // ❌ Jika di luar radius kantor
-                        if (res.message === 'Di luar radius kantor') {
-                            icon = 'error';
-                            title = 'Gagal Absensi';
-                            buttonColor = '#e74a3b';
-                        }
-
                         Swal.fire({
-                            icon: icon,
-                            title: title,
-                            text: res.message,
-                            confirmButtonColor: buttonColor
+                            icon: res.status === false ? 'error' : 'success',
+                            title: res.status === false ? 'Gagal' : 'Berhasil',
+                            text: res.message
                         }).then(() => {
-                            // reload hanya jika absensi berhasil
-                            if (icon === 'success') {
-                                location.reload();
-                            }
+                            if (res.status !== false) location.reload();
                         });
                     })
-                    .catch(err => showAlert(
-                        'error',
-                        'Gagal',
-                        'Terjadi kesalahan saat mengirim absensi'
-                    ));
+                    .catch(() => {
+                        showAlert('error', 'Error', 'Terjadi kesalahan server');
+                    });
             });
         }
     </script>

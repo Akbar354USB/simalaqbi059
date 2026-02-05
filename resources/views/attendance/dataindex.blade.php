@@ -5,188 +5,191 @@
 
         <div class="card shadow-sm">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h5 class="m-0 font-weight-bold text-primary">
-                    📋 Data Absensi Pegawai
-                </h5>
+                <h5 class="m-0 font-weight-bold text-primary">📋 Data Absensi Pegawai</h5>
             </div>
 
             <div class="card-body">
 
-                <div class="mb-3">
-                    <div class="row align-items-end">
+                {{-- FILTER --}}
+                <form method="GET" action="{{ route('attendances.data') }}">
+                    <div class="row align-items-end mb-3">
 
-                        <!-- FORM FILTER -->
-                        <div class="col-md-9">
-                            <form method="GET" action="{{ route('attendances.data') }}">
-                                <div class="row align-items-end">
-
-                                    <div class="col-md-3">
-                                        <label>Tanggal</label>
-                                        <input type="date" name="date" class="form-control"
-                                            value="{{ request('date') }}">
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <label>Bulan</label>
-                                        <input type="month" name="month" class="form-control"
-                                            value="{{ request('month') }}">
-                                    </div>
-
-                                    <!-- GROUP TOMBOL -->
-                                    <div class="col-md-6">
-                                        <div class="d-flex gap-2">
-
-                                            <button type="submit" class="btn btn-primary mr-2">
-                                                🔍 Filter
-                                            </button>
-
-                                            <a href="{{ route('attendances.data') }}" class="btn btn-secondary mr-2">
-                                                🔄 Reset
-                                            </a>
-
-                                            <a href="{{ route('attendances.printPdf', request()->query()) }}"
-                                                class="btn btn-success" target="_blank">
-                                                🖨️ PDF
-                                            </a>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </form>
+                        <div class="col-md-3">
+                            <label>Tanggal</label>
+                            <input type="date" name="date" class="form-control" value="{{ request('date') }}">
                         </div>
 
-
-                        <!-- FORM HAPUS SEMUA -->
-                        <div class="col-md-3 d-flex justify-content-end">
-                            <form action="{{ route('attendances.destroyAll') }}" method="POST"
-                                onsubmit="return confirm('Yakin hapus SEMUA data absensi dan foto?')">
-                                @csrf
-                                @method('DELETE')
-
-                                <button class="btn btn-danger align-self-end">
-                                    🗑 Hapus Semua
-                                </button>
-                            </form>
+                        <div class="col-md-3">
+                            <label>Bulan</label>
+                            <input type="month" name="month" class="form-control" value="{{ request('month') }}">
                         </div>
 
+                        <div class="col-md-6 d-flex justify-content-end gap-2">
+
+                            {{-- FILTER --}}
+                            <button type="submit" class="btn btn-primary">
+                                🔍 Filter
+                            </button>
+
+                            {{-- RESET --}}
+                            <a href="{{ route('attendances.data') }}" class="btn btn-secondary ml-2">
+                                🔄 Reset
+                            </a>
+
+                            {{-- PDF --}}
+                            <a href="{{ route('attendances.printPdf', request()->query()) }}" class="btn btn-success ml-2"
+                                target="_blank">
+                                🖨️ PDF
+                            </a>
+
+                        </div>
                     </div>
-                </div>
+                </form>
 
+                {{-- HAPUS SEMUA (FORM TERPISAH, JANGAN DIGABUNG FILTER) --}}
+                <form action="{{ route('attendances.destroyAll') }}" method="POST" class="d-inline form-delete-all">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="button" class="btn btn-danger btn-delete-all float-right mb-2">
+                        🗑 Hapus Semua
+                    </button>
+                </form>
+
+                {{-- TABLE --}}
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover text-center">
                         <thead class="thead-light">
                             <tr>
                                 <th>No</th>
-                                <th>Nama Pegawai</th>
+                                <th>Pegawai</th>
                                 <th>Tanggal</th>
-                                <th>Jenis</th>
                                 <th>Shift</th>
-                                <th>Jam</th>
+
+                                <th>Datang</th>
+                                <th>Status</th>
+                                <th>Pulang</th>
+                                <th>Status</th>
+
                                 <th>Jarak (m)</th>
-                                <th>Lokasi</th>
                                 <th>Foto</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
+
                             @forelse ($attendances as $attendance)
                                 <tr>
                                     <td>{{ $loop->iteration + $attendances->firstItem() - 1 }}</td>
 
-                                    <td>
-                                        {{ $attendance->employee->employee_name ?? '-' }}
-                                    </td>
+                                    <td>{{ $attendance->employee->employee_name ?? '-' }}</td>
 
                                     <td>
                                         {{ \Carbon\Carbon::parse($attendance->attendance_date)->translatedFormat('d M Y') }}
                                     </td>
 
+                                    <td>{{ $attendance->workShift->shift_name ?? '-' }}</td>
+
+                                    {{-- DATANG --}}
                                     <td>
-                                        <span
-                                            class="badge 
-                                        {{ $attendance->type == 'DATANG' ? 'badge-success' : 'badge-warning' }}">
-                                            {{ $attendance->type }}
-                                        </span>
+                                        {{ $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->format('H:i:s') : '-' }}
                                     </td>
 
                                     <td>
-                                        {{ $attendance->workShift->shift_name ?? '-' }}
+                                        @if ($attendance->check_in_status)
+                                            <span
+                                                class="badge badge-{{ $attendance->check_in_status === 'ON_TIME' ? 'success' : 'danger' }}">
+                                                {{ $attendance->check_in_status }}
+                                            </span>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+
+                                    {{-- PULANG --}}
+                                    <td>
+                                        {{ $attendance->check_out_time ? \Carbon\Carbon::parse($attendance->check_out_time)->format('H:i:s') : '-' }}
                                     </td>
 
                                     <td>
-                                        {{ \Carbon\Carbon::parse($attendance->attendance_time)->format('H:i:s') }}
+                                        @if ($attendance->check_out_status)
+                                            <span class="badge badge-warning">
+                                                {{ $attendance->check_out_status }}
+                                            </span>
+                                        @else
+                                            -
+                                        @endif
                                     </td>
 
+                                    {{-- JARAK --}}
                                     <td>
-                                        {{ $attendance->distance_meter }} m
+                                        {{ $attendance->check_out_distance_meter ?? ($attendance->check_in_distance_meter ?? '-') }}
                                     </td>
 
-                                    <td>
-                                        <a href="https://www.google.com/maps?q={{ $attendance->latitude }},{{ $attendance->longitude }}"
-                                            target="_blank" class="btn btn-sm btn-info">
-                                            📍 Maps
-                                        </a>
+                                    {{-- FOTO --}}
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            {{-- FOTO DATANG --}}
+                                            @if ($attendance->check_in_photo_path)
+                                                <a href="{{ asset('storage/' . $attendance->check_in_photo_path) }}"
+                                                    target="_blank">
+                                                    <img src="{{ asset('storage/' . $attendance->check_in_photo_path) }}"
+                                                        class="img-thumbnail"
+                                                        style="width:60px; height:60px; object-fit:cover;"
+                                                        title="Foto Datang">
+                                                </a>
+                                            @endif
+
+                                            {{-- FOTO PULANG --}}
+                                            @if ($attendance->check_out_photo_path)
+                                                <a href="{{ asset('storage/' . $attendance->check_in_photo_path) }}"
+                                                    target="_blank">
+                                                    <img src="{{ asset('storage/' . $attendance->check_in_photo_path) }}"
+                                                        class="img-thumbnail"
+                                                        style="width:60px; height:60px; object-fit:cover;"
+                                                        title="Foto Pulang">
+                                                </a>
+                                            @endif
+
+                                            {{-- JIKA TIDAK ADA FOTO --}}
+                                            @if (!$attendance->check_in_photo_path && !$attendance->check_out_photo_path)
+                                                -
+                                            @endif
+
+                                        </div>
                                     </td>
 
-                                    <td>
-                                        <button class="btn btn-sm btn-info" data-toggle="modal"
-                                            data-target="#photoModal{{ $attendance->id }}">
-                                            📷 Lihat Foto
-                                        </button>
-                                    </td>
-
-
+                                    {{-- AKSI --}}
                                     <td>
                                         <form action="{{ route('attendances.destroy', $attendance->id) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                            class="d-inline delete-form">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="button" class="btn btn-danger btn-sm btn-delete">
+
+                                            <button type="button" class="btn btn-danger btn-delete">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
-                                <!-- Modal Foto Absensi -->
-                                <div class="modal fade" id="photoModal{{ $attendance->id }}" tabindex="-1">
-                                    <div class="modal-dialog modal-dialog-centered modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">
-                                                    Foto Absensi - {{ $attendance->employee->name ?? '-' }}
-                                                </h5>
-                                                <button type="button" class="close" data-dismiss="modal">
-                                                    <span>&times;</span>
-                                                </button>
-                                            </div>
 
-                                            <div class="modal-body text-center">
-                                                <img src="{{ asset('storage/' . $attendance->photo_path) }}"
-                                                    class="img-fluid rounded">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             @empty
                                 <tr>
-                                    <td colspan="10">Data absensi belum tersedia</td>
+                                    <td colspan="12">Data absensi belum tersedia</td>
                                 </tr>
                             @endforelse
+
                         </tbody>
                     </table>
                 </div>
 
-                {{-- <div class="mt-3">
-                    {{ $attendances->appends(request()->query())->links() }}
-                </div> --}}
+                {{-- PAGINATION --}}
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted">
-                        Menampilkan {{ $attendances->firstItem() }} –
-                        {{ $attendances->lastItem() }} dari
-                        {{ $attendances->total() }} data
+                        Menampilkan {{ $attendances->firstItem() }} – {{ $attendances->lastItem() }}
+                        dari {{ $attendances->total() }} data
                     </div>
-
                     <div>
                         {{ $attendances->appends(request()->query())->links() }}
                     </div>
@@ -194,31 +197,27 @@
 
             </div>
         </div>
-
     </div>
 @endsection
 @section('js')
-    {{-- SweetAlert Success --}}
     @if (session('success'))
         <script>
             Swal.fire({
-                icon: 'success',
+                icon: '{{ session('success_type') === 'all' ? 'warning' : 'success' }}',
                 title: 'Berhasil',
-                text: "{{ session('success') }}",
-                confirmButtonColor: '#1cc88a'
+                text: '{{ session('success') }}'
             });
         </script>
     @endif
-
-    {{-- SweetAlert Delete Confirmation --}}
     <script>
+        // HAPUS PER BARIS
         document.querySelectorAll('.btn-delete').forEach(button => {
             button.addEventListener('click', function() {
                 const form = this.closest('form');
 
                 Swal.fire({
                     title: 'Yakin?',
-                    text: 'Data Absensi akan dihapus permanen!',
+                    text: 'Data absensi dan foto akan dihapus permanen!',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#e3342f',
@@ -230,6 +229,26 @@
                         form.submit();
                     }
                 });
+            });
+        });
+
+        // HAPUS SEMUA
+        document.querySelector('.btn-delete-all')?.addEventListener('click', function() {
+            const form = this.closest('form');
+
+            Swal.fire({
+                title: 'PERINGATAN!',
+                html: '<b>SEMUA</b> data absensi dan <b>SEMUA FOTO</b> akan dihapus permanen.<br><br>Lanjutkan?',
+                icon: 'error',
+                showCancelButton: true,
+                confirmButtonColor: '#e3342f',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Ya, hapus SEMUA!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
             });
         });
     </script>

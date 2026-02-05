@@ -11,34 +11,44 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendaces', function (Blueprint $table) {
+        Schema::create('attendances', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('employee_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
             $table->date('attendance_date');
 
-            $table->enum('type', ['DATANG', 'PULANG']);
-
             $table->foreignId('work_shift_id')
                 ->constrained()
                 ->cascadeOnDelete();
 
-            $table->decimal('latitude', 10, 7);
-            $table->decimal('longitude', 10, 7);
-            $table->integer('distance_meter');
+            // ===== ABSEN DATANG =====
+            $table->timestamp('check_in_time')->nullable();
+            $table->decimal('check_in_latitude', 10, 7)->nullable();
+            $table->decimal('check_in_longitude', 10, 7)->nullable();
+            $table->integer('check_in_distance_meter')->nullable();
+            $table->string('check_in_photo_path')->nullable();
 
-            $table->string('photo_path');
+            // ===== ABSEN PULANG =====
+            $table->timestamp('check_out_time')->nullable();
+            $table->decimal('check_out_latitude', 10, 7)->nullable();
+            $table->decimal('check_out_longitude', 10, 7)->nullable();
+            $table->integer('check_out_distance_meter')->nullable();
+            $table->string('check_out_photo_path')->nullable();
+            // status masuk
+            $table->enum('check_in_status', ['ON_TIME', 'TERLAMBAT'])->nullable();
 
-            $table->timestamp('attendance_time');
+            // status pulang
+            $table->enum('check_out_status', ['ON_TIME', 'LEBIH AWAL', 'TERLAMBAT'])->nullable();
 
             $table->timestamps();
 
+            // 1 pegawai hanya 1 data per hari per shift
             $table->unique([
                 'employee_id',
                 'attendance_date',
-                'type',
                 'work_shift_id'
             ]);
         });

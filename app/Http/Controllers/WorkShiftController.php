@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\WorkShift;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class WorkShiftController extends Controller
@@ -14,7 +15,7 @@ class WorkShiftController extends Controller
         return view('work_shifts.index', compact('workShifts'));
     }
 
-    // Form tambah data
+    // Form tambah
     public function create()
     {
         return view('work_shifts.create');
@@ -25,14 +26,33 @@ class WorkShiftController extends Controller
     {
         $request->validate([
             'shift_name' => 'required|string|max:255',
-            'start_time' => 'required',
-            'end_time'   => 'required',
+            'start_time' => 'required|date_format:H:i',
+            'end_time'   => 'required|date_format:H:i',
+            'day_span'   => 'required|integer|min:0|max:7',
         ]);
 
-        WorkShift::create($request->all());
+        $startTime = Carbon::createFromFormat('H:i', $request->start_time);
+        $endTime   = Carbon::createFromFormat('H:i', $request->end_time);
 
-        return redirect()->route('work-shifts.index')
-            ->with('success', 'Shift berhasil ditambahkan');
+        // Tentukan lintas hari
+        $isCrossDay = false;
+
+        // Jika jam selesai <= jam mulai → pasti lintas hari
+        if ($endTime->lte($startTime) || $request->day_span > 0) {
+            $isCrossDay = true;
+        }
+
+        WorkShift::create([
+            'shift_name'  => $request->shift_name,
+            'start_time'  => $request->start_time,
+            'end_time'    => $request->end_time,
+            'day_span'    => $request->day_span,
+            'is_cross_day' => $isCrossDay,
+        ]);
+
+        return redirect()
+            ->route('work-shifts.index')
+            ->with('success', 'Shift kerja berhasil ditambahkan');
     }
 
     // Form edit
@@ -44,15 +64,16 @@ class WorkShiftController extends Controller
     // Update data
     public function update(Request $request, WorkShift $workShift)
     {
-        $request->validate([
+        $validated = $request->validate([
             'shift_name' => 'required|string|max:255',
-            'start_time' => 'required',
-            'end_time'   => 'required',
+            'start_time' => 'required|date_format:H:i',
+            'end_time'   => 'required|date_format:H:i',
         ]);
 
-        $workShift->update($request->all());
+        $workShift->update($validated);
 
-        return redirect()->route('work-shifts.index')
+        return redirect()
+            ->route('work-shifts.index')
             ->with('success', 'Shift berhasil diperbarui');
     }
 

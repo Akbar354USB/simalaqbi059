@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Attendace;
+use App\Models\Attendance;
+use Carbon\Carbon;
 use App\Models\OfficeLocation;
 use App\Models\WorkShift;
 use App\Services\GeoService;
@@ -15,51 +16,78 @@ class AttendaceController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $employeeId = auth()->user()->employee_id;
+        $now = now();
 
-        // ❌ User non-aktif tidak bisa absen
-        if (!$user->employee->is_active) {
-            abort(403, 'Akun Anda tidak aktif');
-        }
+        $attendanceToday = Attendance::where('employee_id', $employeeId)
+            ->where(function ($q) use ($now) {
+                $q->whereDate('attendance_date', $now->toDateString())
+                    ->orWhereDate('attendance_date', $now->copy()->subDay()->toDateString());
+            })
+            ->whereNull('check_out_time')
+            ->first();
 
         return view('attendance.index', [
-            'shifts' => WorkShift::all()
+            'shifts' => WorkShift::all(),
+            'attendanceToday' => $attendanceToday
         ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:DATANG,PULANG',
             'work_shift_id' => 'required|exists:work_shifts,id',
-            'latitude' => 'required',
-            'longitude' => 'required',
-            'photo' => 'required|image|mimes:jpg,jpeg,png'
+            'latitude'      => 'required',
+            'longitude'     => 'required',
+            'photo'         => 'required|image|mimes:jpg,jpeg,png',
         ]);
 
         $user = auth()->user();
 
-        // ❌ User non-aktif
-        if (!$user->employee->is_active) {
-            return response()->json(['message' => 'Akun tidak aktif'], 403);
+        if (!$user->employee || !$user->employee->is_active) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Akun tidak aktif'
+            ], 403);
         }
 
-        // ❌ Cegah absensi ganda
-        $exists = Attendace::where([
-            'employee_id' => $user->employee_id,
-            'attendance_date' => now()->toDateString(),
-            'type' => $request->type,
-            'work_shift_id' => $request->work_shift_id
-        ])->exists();
 
-        if ($exists) {
+
+        $shift = WorkShift::findOrFail($request->work_shift_id);
+        $now   = now();
+
+        $existingAttendance = Attendance::where('employee_id', $user->employee_id)
+            ->where(function ($q) use ($now) {
+                $q->whereDate('attendance_date', $now->toDateString())
+                    ->orWhereDate('attendance_date', $now->copy()->subDay()->toDateString());
+            })
+            ->whereNull('check_out_time')
+            ->first();
+
+        if ($existingAttendance) {
+            // FORCE shift dari absensi datang
+            $request->merge([
+                'work_shift_id' => $existingAttendance->work_shift_id
+            ]);
+        }
+        /**
+         * Tentukan tanggal absensi
+         * Jika shift lintas hari dan sekarang < jam selesai
+         * maka absensi dianggap milik hari sebelumnya
+         */
+        $attendanceDate = $shift->is_cross_day &&
+            $now->lt($shift->endDateTime($now->toDateString()))
+            ? $now->copy()->subDay()->toDateString()
+            : $now->toDateString();
+
+        // 📍 Validasi lokasi kantor
+        $office = OfficeLocation::first();
+        if (!$office) {
             return response()->json([
-                'message' => 'Absensi sudah dilakukan'
+                'status'  => false,
+                'message' => 'Lokasi kantor belum dikonfigurasi'
             ], 422);
         }
-
-        // 📍 Validasi radius
-        $office = OfficeLocation::first();
 
         $distance = GeoService::distanceMeter(
             $request->latitude,
@@ -70,42 +98,97 @@ class AttendaceController extends Controller
 
         if ($distance > $office->radius_meter) {
             return response()->json([
+                'status'  => false,
                 'message' => 'Di luar radius kantor'
             ], 403);
         }
 
-        // 📷 Simpan foto
+        // Cari absensi hari ini (JANGAN CREATE DULU)
+        $attendance = Attendance::where('employee_id', $user->employee_id)
+            ->where('attendance_date', $attendanceDate)
+            ->where('work_shift_id', $shift->id)
+            ->first();
+
+        // 📷 Simpan foto (dipakai check-in / check-out)
         $photoPath = $request->file('photo')
             ->store('attendance_photos', 'public');
 
-        Attendace::create([
-            'employee_id' => $user->employee_id,
-            'attendance_date' => now()->toDateString(),
-            'attendance_time' => now(),
-            'type' => $request->type,
-            'work_shift_id' => $request->work_shift_id,
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
-            'distance_meter' => $distance,
-            'photo_path' => $photoPath
+        /* ================= CHECK IN ================= */
+        if (!$attendance) {
+
+            // waktu mulai shift
+            $shiftStart = $shift->startDateTime($attendanceDate);
+
+            // batas toleransi (15 menit setelah shift mulai)
+            $lateTolerance = $shiftStart->copy()->addMinutes(15);
+
+            // tentukan status datang
+            $checkInStatus = $now->lte($lateTolerance) ? 'ON_TIME' : 'TERLAMBAT';
+
+            Attendance::create([
+                'employee_id'             => $user->employee_id,
+                'attendance_date'         => $attendanceDate,
+                'work_shift_id'           => $shift->id,
+                'check_in_time'           => $now,
+                'check_in_latitude'       => $request->latitude,
+                'check_in_longitude'      => $request->longitude,
+                'check_in_distance_meter' => $distance,
+                'check_in_photo_path'     => $photoPath,
+                'check_in_status'         => $checkInStatus,
+            ]);
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Absen datang berhasil'
+            ]);
+        }
+
+        /* ================= CHECK OUT ================= */
+        if ($attendance->check_out_time) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Anda sudah absen pulang'
+            ], 422);
+        }
+
+        $shiftEnd = $shift->endDateTime($attendanceDate);
+
+        // toleransi pulang 10 menit
+        $checkoutTolerance = $shiftEnd->copy()->addMinutes(10);
+
+        if ($now->lt($shiftEnd)) {
+            $checkOutStatus = 'LEBIH AWAL';
+        } elseif ($now->lte($checkoutTolerance)) {
+            $checkOutStatus = 'ON_TIME';
+        } else {
+            $checkOutStatus = 'TERLAMBAT';
+        }
+
+        $attendance->update([
+            'check_out_time'           => $now,
+            'check_out_latitude'       => $request->latitude,
+            'check_out_longitude'      => $request->longitude,
+            'check_out_distance_meter' => $distance,
+            'check_out_photo_path'     => $photoPath,
+            'check_out_status'         => $checkOutStatus,
         ]);
 
         return response()->json([
-            'message' => 'Absensi berhasil'
+            'status'  => true,
+            'message' => 'Absen pulang berhasil'
         ]);
     }
 
     public function dataindex(Request $request)
     {
-        $query = Attendace::with(['employee', 'workShift'])
-            ->latest('attendance_time');
+        $query = Attendance::with(['employee', 'workShift'])
+            ->orderByDesc('attendance_date')
+            ->orderByDesc('check_in_time');
 
-        // Filter berdasarkan tanggal
         if ($request->filled('date')) {
             $query->whereDate('attendance_date', $request->date);
         }
 
-        // Filter berdasarkan bulan
         if ($request->filled('month')) {
             $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
                 ->whereYear('attendance_date', date('Y', strtotime($request->month)));
@@ -116,13 +199,25 @@ class AttendaceController extends Controller
         return view('attendance.dataindex', compact('attendances'));
     }
 
-    public function destroy(Attendace $attendance)
+    public function destroy(Attendance $attendance)
     {
-        // hapus file foto jika ada
-        if ($attendance->photo_path && Storage::disk('public')->exists($attendance->photo_path)) {
-            Storage::disk('public')->delete($attendance->photo_path);
+        // 🔥 Hapus foto check-in
+        if (
+            $attendance->check_in_photo_path &&
+            Storage::disk('public')->exists($attendance->check_in_photo_path)
+        ) {
+            Storage::disk('public')->delete($attendance->check_in_photo_path);
         }
 
+        // 🔥 Hapus foto check-out
+        if (
+            $attendance->check_out_photo_path &&
+            Storage::disk('public')->exists($attendance->check_out_photo_path)
+        ) {
+            Storage::disk('public')->delete($attendance->check_out_photo_path);
+        }
+
+        // 🗑 Hapus data absensi
         $attendance->delete();
 
         return redirect()
@@ -132,30 +227,39 @@ class AttendaceController extends Controller
 
     public function destroyAll()
     {
-        $attendances = Attendace::all();
+        $attendances = Attendance::all();
 
         foreach ($attendances as $attendance) {
-            if (
-                $attendance->photo_path &&
-                Storage::disk('public')->exists($attendance->photo_path)
-            ) {
 
-                Storage::disk('public')->delete($attendance->photo_path);
+            // FOTO DATANG
+            if (
+                $attendance->check_in_photo_path &&
+                Storage::disk('public')->exists($attendance->check_in_photo_path)
+            ) {
+                Storage::disk('public')->delete($attendance->check_in_photo_path);
+            }
+
+            // FOTO PULANG
+            if (
+                $attendance->check_out_photo_path &&
+                Storage::disk('public')->exists($attendance->check_out_photo_path)
+            ) {
+                Storage::disk('public')->delete($attendance->check_out_photo_path);
             }
         }
 
-        Attendace::truncate(); // hapus semua data tabel
+        Attendance::truncate(); // hapus semua data
 
         return redirect()
-            ->route('attendances.data')
-            ->with('success', 'Semua data absensi dan foto berhasil dihapus');
+            ->back()
+            ->with('success', 'SEMUA data absensi dan foto berhasil dihapus');
     }
 
     public function printPdf(Request $request)
     {
-        $query = Attendace::with(['employee', 'workShift'])
+        $query = Attendance::with(['employee', 'workShift'])
             ->orderBy('attendance_date', 'asc')
-            ->orderBy('attendance_time', 'asc');
+            ->orderBy('check_in_time', 'asc'); // ✅ GANTI
 
         // Filter tanggal
         if ($request->filled('date')) {
@@ -172,7 +276,10 @@ class AttendaceController extends Controller
 
         $pdf = Pdf::loadView('attendance.pdf', [
             'attendances' => $attendances,
-            'request' => $request
+            'filters' => [
+                'date'  => $request->date,
+                'month' => $request->month,
+            ]
         ])->setPaper('A4', 'landscape');
 
         return $pdf->stream('data-absensi.pdf');
