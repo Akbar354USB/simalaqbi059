@@ -22,6 +22,7 @@ use App\Http\Controllers\WorkShiftController;
 use App\Http\Controllers\WorkUnitController;
 use App\Http\Controllers\EmployeeFaceController;
 use App\Http\Controllers\HeadOfficeApprovalController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\UnitHeadApprovalController;
 use Illuminate\Support\Facades\Auth;
 
@@ -42,6 +43,10 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', [LandingController::class, 'landing'])->name('landing');
+
+Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])
+    ->middleware('auth')
+    ->name('push.subscribe');
 
 Route::get('/google/connect/{employee}', [GoogleController::class, 'redirect'])
     ->name('google.connect');

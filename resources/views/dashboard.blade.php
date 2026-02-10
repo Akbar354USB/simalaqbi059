@@ -115,3 +115,38 @@
         </div>
     </div>
 @endsection
+@section('js')
+    {{-- resources/views/dashboard.blade.php --}}
+
+    <button onclick="subscribePush()" class="btn btn-primary float-right">
+        Aktifkan Reminder Absensi
+    </button>
+
+    <script>
+        async function subscribePush() {
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                alert('Izin notifikasi ditolak');
+                return;
+            }
+
+            const registration = await navigator.serviceWorker.ready;
+
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: "{{ config('webpush.vapid.public_key') }}"
+            });
+
+            await fetch("{{ route('push.subscribe') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify(subscription)
+            });
+
+            alert('Reminder absensi aktif');
+        }
+    </script>
+@endsection

@@ -13,6 +13,9 @@
     <!-- CSS Libraries -->
 
     <!-- Template CSS -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d6efd">
+
     <link rel="stylesheet" href="{{ asset('backend/stisla/assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/stisla/assets/css/components.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -59,6 +62,19 @@
     </div>
 
     <!-- General JS Scripts -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
     <script src="{{ asset('backend/stisla/assets/modules/jquery.min.js') }}"></script>
     <script src="{{ asset('backend/stisla/assets/modules/popper.js') }}"></script>
     <script src="{{ asset('backend/stisla/assets/modules/tooltip.js') }}"></script>
@@ -76,6 +92,7 @@
     <!-- Template JS File -->
     <script src="{{ asset('backend/stisla/assets/js/scripts.js') }}"></script>
     <script src="{{ asset('backend/stisla/assets/js/custom.js') }}"></script>
+
     @yield('js')
 </body>
 

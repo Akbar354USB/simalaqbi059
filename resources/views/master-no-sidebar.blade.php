@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="{{ asset('backend/stisla/assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/stisla/assets/css/components.css') }}">
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0d6efd">
 
     @yield('css')
 
@@ -59,7 +61,19 @@
 
         </div>
     </div>
-
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
     <!-- General JS Scripts -->
     <script src="{{ asset('backend/stisla/assets/modules/jquery.min.js') }}"></script>
     <script src="{{ asset('backend/stisla/assets/modules/bootstrap/js/bootstrap.min.js') }}"></script>
