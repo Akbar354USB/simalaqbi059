@@ -60,9 +60,9 @@ class LoginController extends Controller
         $googleAccount = $employee?->googleAccount;
 
         // Jika BELUM pernah connect Google
-        if (!$googleAccount || !$googleAccount->refresh_token) {
-            return redirect()->route('google.connect', $employee->id);
-        }
+        // if (!$googleAccount || !$googleAccount->refresh_token) {
+        //     return redirect()->route('google.connect', $employee->id);
+        // }
 
         // 🔐 Role yang diarahkan ke home
         if (in_array($user->role, ['superadmin', 'unit_head', 'head_office'])) {

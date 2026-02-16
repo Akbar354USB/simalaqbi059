@@ -25,35 +25,35 @@
 
                 {{-- FILTER --}}
                 <form action="{{ route('guest_book_index') }}" method="GET" class="mb-3">
-                    <div class="form-row">
-                        <div class="col-md-3">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-3">
                             <label>Filter Tanggal</label>
                             <input type="date" name="date" class="form-control" value="{{ request('date') }}">
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-6 col-md-3">
                             <label>Filter Bulan</label>
                             <input type="month" name="month" class="form-control" value="{{ request('month') }}">
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-6 col-md-3">
                             <label>Dari Tanggal</label>
                             <input type="date" name="start_date" class="form-control"
                                 value="{{ request('start_date') }}">
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-6 col-md-3">
                             <label>Sampai Tanggal</label>
                             <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
                         </div>
                     </div>
 
-                    <div class="form-row mt-3">
-                        <div class="col-md-12">
+                    <div class="row mt-3">
+                        <div class="col-12">
                             <button class="btn btn-primary">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
-                            <a href="{{ route('guest_book_index') }}" class="btn btn-secondary">
+                            <a href="{{ route('guest_book_index') }}" class="btn btn-warning">
                                 <i class="fas fa-sync-alt"></i> Reset
                             </a>
                         </div>

@@ -1,8 +1,10 @@
-      <footer class="main-footer">
-          <div class="footer-left">
-              Copyright &copy; {{ now()->year }} <div class="bullet"></div><i>Developed by ParticipantMaganghub2</i>
-          </div>
-          <div class="footer-right">
-
-          </div>
-      </footer>
+<footer class="pc-footer">
+    <div class="footer-wrapper container-fluid">
+        <div class="row">
+            <div class="col-sm my-1">
+                <p class="m-0">Copyright &copy; {{ now()->year }} <i>Developed By ParticipantMaganghub2</i>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>

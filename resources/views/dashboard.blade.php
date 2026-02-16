@@ -4,67 +4,63 @@
     <div class="container-fluid">
         <div class="alert alert-success text-left" role="alert">
             <i class="fas fa-info-circle"></i>
-            Selamat Datang <strong>{{ Auth::user()->name }}</strong> di SIMONA59. Sistem Monitoring dan Administrasi KPPN
+            Selamat Datang <strong>{{ Auth::user()->name }}</strong> di SIMALAQBI059. Sistem Monitoring dan Administrasi
+            KPPN
             Majene.
         </div>
-        <div class="row">
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="card card-statistic-1">
-                    <div class="card-icon bg-primary">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    <div class="card-wrap">
-                        <div class="card-header">
-                            <h4>Pegawai Terdaftar</h4>
-                        </div>
-                        <div class="card-body">
+        <div class="row g-3 mb-3">
+            <div class="col-6 col-md-6 col-xl-3">
+                <div class="card h-100 bg-primary bg-opacity-25">
+                    <div class="card-body">
+                        <h6 class="mb-2 f-w-400 text-muted">Pegawai Terdaftar</h6>
+                        <h4 class="mb-3">
                             {{ $totalPegawai }}
-                        </div>
+                            <span class="badge bg-light-primary border border-primary">
+                                <i class="ti ti-users"></i>
+                            </span>
+                        </h4>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="card card-statistic-1">
-                    <div class="card-icon bg-danger">
-                        <i class="far fa-newspaper"></i>
-                    </div>
-                    <div class="card-wrap">
-                        <div class="card-header">
-                            <h4>Daftar Tamu</h4>
-                        </div>
-                        <div class="card-body">
+
+            <div class="col-6 col-md-6 col-xl-3">
+                <div class="card h-100 bg-success bg-opacity-25">
+                    <div class="card-body">
+                        <h6 class="mb-2 f-w-400 text-muted">Daftar Tamu</h6>
+                        <h4 class="mb-3">
                             {{ $totalTamu }}
-                        </div>
+                            <span class="badge bg-light-success border border-success">
+                                <i class="ti ti-book"></i>
+                            </span>
+                        </h4>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="card card-statistic-1">
-                    <div class="card-icon bg-warning">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <div class="card-wrap">
-                        <div class="card-header">
-                            <h4>Progress WBK-WBBM</h4>
-                        </div>
-                        <div class="card-body">
+
+            <div class="col-6 col-md-6 col-xl-3">
+                <div class="card h-100 bg-warning bg-opacity-25">
+                    <div class="card-body">
+                        <h6 class="mb-2 f-w-400 text-muted">Progress WBK-WBBM</h6>
+                        <h4 class="mb-3">
                             {{ $overallProgress }} %
-                        </div>
+                            <span class="badge bg-light-warning border border-warning">
+                                <i class="ti ti-trending-up"></i>
+                            </span>
+                        </h4>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6 col-sm-6 col-12">
-                <div class="card card-statistic-1">
-                    <div class="card-icon bg-success">
-                        <i class="fas fa-landmark"></i>
-                    </div>
-                    <div class="card-wrap">
-                        <div class="card-header">
-                            <h4>Satker Terdaftar</h4>
-                        </div>
-                        <div class="card-body">
+
+            <div class="col-6 col-md-6 col-xl-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="mb-2 f-w-400 text-muted">Satker Terdaftar</h6>
+                        <h4 class="mb-3">
                             {{ $satker }}
-                        </div>
+                            <span class="badge bg-light-danger border border-danger">
+                                <i class="ti ti-building"></i>
+                            </span>
+                        </h4>
                     </div>
                 </div>
             </div>
@@ -95,7 +91,7 @@
                             </div>
                         @endforeach
                         <p class="text-muted small">
-                            Target: 100% (WBK → WBBM)
+                            Target: 100% (WBK â†’ WBBM)
                         </p>
                     </div>
                 </div>
@@ -116,35 +112,82 @@
     </div>
 @endsection
 @section('js')
-    {{-- resources/views/dashboard.blade.php --}}
-
-    <button onclick="subscribePush()" class="btn btn-primary float-right">
+    <button onclick="subscribePush()" class="btn btn-primary float-end">
         Aktifkan Reminder Absensi
     </button>
 
     <script>
+        // ===============================
+        // Helper WAJIB untuk VAPID Key
+        // ===============================
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+
+            const rawData = atob(base64);
+            return Uint8Array.from(
+                [...rawData].map(char => char.charCodeAt(0))
+            );
+        }
+
+        // ===============================
+        // Subscribe Push Notification
+        // ===============================
         async function subscribePush() {
+
+            // ❌ Browser tidak support
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                alert('Browser tidak mendukung Push Notification');
+                return;
+            }
+
+            // 🔔 Minta izin notifikasi
             const permission = await Notification.requestPermission();
             if (permission !== 'granted') {
                 alert('Izin notifikasi ditolak');
                 return;
             }
 
+            // 🧩 Ambil service worker
             const registration = await navigator.serviceWorker.ready;
 
+            // 🔑 Subscribe push
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
-                applicationServerKey: "{{ config('webpush.vapid.public_key') }}"
+                applicationServerKey: urlBase64ToUint8Array(
+                    "{{ config('webpush.vapid.public_key') }}"
+                )
             });
 
-            await fetch("{{ route('push.subscribe') }}", {
+            /**
+             * 🔥 PENTING !!!
+             * Laravel WebPush BUTUH contentEncoding
+             */
+            const data = subscription.toJSON();
+            data.contentEncoding = 'aesgcm';
+
+            // 🚀 Kirim ke server
+            const response = await fetch("{{ route('push.subscribe') }}", {
                 method: "POST",
+                credentials: "same-origin", // WAJIB agar auth terbaca
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": "{{ csrf_token() }}"
                 },
-                body: JSON.stringify(subscription)
+                body: JSON.stringify(data)
             });
+
+            // 🔍 Debug response
+            console.log('STATUS:', response.status);
+            const respText = await response.text();
+            console.log('RESPONSE:', respText);
+
+            if (!response.ok) {
+                alert('Gagal menyimpan subscription (' + response.status + ')');
+                return;
+            }
 
             alert('Reminder absensi aktif');
         }
