@@ -94,12 +94,22 @@
                                     <td>
                                         {{ $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->format('H:i:s') : '-' }}
                                     </td>
-
                                     <td>
-                                        @if ($attendance->check_in_status)
-                                            <span
-                                                class="badge badge-{{ $attendance->check_in_status === 'ON_TIME' ? 'success' : 'danger' }}">
-                                                {{ $attendance->check_in_status }}
+                                        @php
+                                            $status = $attendance->check_in_status;
+
+                                            $badgeClass = match ($status) {
+                                                'ON_TIME' => 'bg-success',
+                                                'TERLAMBAT' => 'bg-danger',
+                                                'LEBIH AWAL' => 'bg-warning text-dark',
+                                                'LEMBUR' => 'bg-primary',
+                                                default => 'bg-secondary',
+                                            };
+                                        @endphp
+
+                                        @if ($status)
+                                            <span class="badge {{ $badgeClass }}">
+                                                {{ $status }}
                                             </span>
                                         @else
                                             -
@@ -110,11 +120,22 @@
                                     <td>
                                         {{ $attendance->check_out_time ? \Carbon\Carbon::parse($attendance->check_out_time)->format('H:i:s') : '-' }}
                                     </td>
-
                                     <td>
-                                        @if ($attendance->check_out_status)
-                                            <span class="badge badge-warning">
-                                                {{ $attendance->check_out_status }}
+                                        @php
+                                            $status = $attendance->check_out_status;
+
+                                            $badgeClass = match ($status) {
+                                                'ON_TIME' => 'bg-success',
+                                                'TERLAMBAT' => 'bg-danger',
+                                                'LEBIH AWAL' => 'bg-warning text-dark',
+                                                'LEMBUR' => 'bg-primary',
+                                                default => 'bg-secondary',
+                                            };
+                                        @endphp
+
+                                        @if ($status)
+                                            <span class="badge {{ $badgeClass }}">
+                                                {{ $status }}
                                             </span>
                                         @else
                                             -
@@ -132,9 +153,9 @@
 
                                             {{-- FOTO DATANG --}}
                                             @if ($attendance->check_in_photo_path)
-                                                <a href="{{ asset('storage/' . $attendance->check_in_photo_path) }}"
+                                                <a href="{{ asset('storage/' . $attendance->check_in_photo_path) }}?t={{ time() }}"
                                                     target="_blank">
-                                                    <img src="{{ asset('storage/' . $attendance->check_in_photo_path) }}"
+                                                    <img src="{{ asset('storage/' . $attendance->check_in_photo_path) }}?t={{ time() }}"
                                                         class="img-thumbnail"
                                                         style="width:60px; height:60px; object-fit:cover;"
                                                         title="Foto Datang">
@@ -143,9 +164,9 @@
 
                                             {{-- FOTO PULANG --}}
                                             @if ($attendance->check_out_photo_path)
-                                                <a href="{{ asset('storage/' . $attendance->check_in_photo_path) }}"
+                                                <a href="{{ asset('storage/' . $attendance->check_out_photo_path) }}?t={{ time() }}"
                                                     target="_blank">
-                                                    <img src="{{ asset('storage/' . $attendance->check_in_photo_path) }}"
+                                                    <img src="{{ asset('storage/' . $attendance->check_out_photo_path) }}?t={{ time() }}"
                                                         class="img-thumbnail"
                                                         style="width:60px; height:60px; object-fit:cover;"
                                                         title="Foto Pulang">
