@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categories;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 
 class LandingController extends Controller
@@ -12,6 +13,10 @@ class LandingController extends Controller
         $categories = Categories::with([
             'sub_categories.items.item_documents.upload'
         ])->get();
-        return view('landing',  compact('categories'));
+
+        $path = public_path('backend/landing/slider');
+        $images = File::files($path);
+
+        return view('landing',  compact('categories', 'images'));
     }
 }

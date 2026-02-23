@@ -25,6 +25,9 @@
     <!-- [Template CSS Files] -->
     <link rel="stylesheet" href="{{ asset('backend/mantis/assets/css/style.css') }}" id="main-style-link">
     <link rel="stylesheet" href="{{ asset('backend/mantis/assets/css/style-preset.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
     @yield('css')
 
 </head>
@@ -62,6 +65,15 @@
 
 
     <!-- Required Js -->
+    <!-- jQuery (WAJIB PALING ATAS) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <script src="{{ asset('backend/mantis/assets/js/plugins/popper.min.js') }}"></script>
     <script src="{{ asset('backend/mantis/assets/js/plugins/simplebar.min.js') }}"></script>
     <script src="{{ asset('backend/mantis/assets/js/plugins/bootstrap.min.js') }}"></script>
@@ -98,10 +110,6 @@
             });
         }
     </script>
-
-    <!-- Page Specific JS File -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('js')
 </body>
 <!-- [Body] end -->

@@ -1,123 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- [Head] start -->
 
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-    <title>Login &mdash; Stisla</title>
+    <title>Login | Simalaqbi059</title>
+    <!-- [Meta] -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <!-- General CSS Files -->
-    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/modules/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/modules/fontawesome/css/all.min.css') }}">
+    <!-- [Favicon] icon -->
+    <link rel="icon" href="../assets/images/favicon.svg" type="image/x-icon"> <!-- [Google Font] Family -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap"
+        id="main-font-link">
+    <!-- [Tabler Icons] https://tablericons.com -->
+    <link rel="stylesheet" href="{{ asset('backend/mantis/assets/fonts/tabler-icons.min.css') }}">
+    <!-- [Feather Icons] https://feathericons.com -->
+    <link rel="stylesheet" href="{{ asset('backend/mantis/assets/fonts/feather.css') }}">
+    <!-- [Font Awesome Icons] https://fontawesome.com/icons -->
+    <link rel="stylesheet" href="{{ asset('backend/mantis/assets/fonts/fontawesome.css') }}">
+    <!-- [Material Icons] https://fonts.google.com/icons -->
+    <link rel="stylesheet" href="{{ asset('backend/mantis/assets/fonts/material.css') }}">
+    <!-- [Template CSS Files] -->
+    <link rel="stylesheet" href="{{ asset('backend/mantis/assets/css/style.css') }}" id="main-style-link">
+    <link rel="stylesheet" href="{{ asset('backend/mantis/assets/css/style-preset.css') }}">
 
-    <!-- CSS Libraries -->
-    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/modules/bootstrap-social/bootstrap-social.css') }}">
-
-    <!-- Template CSS -->
-    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/css/style.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/stisla/assets/css/components.css') }}">
-    <!-- Start GA -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-94034622-3"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        gtag('js', new Date());
-
-        gtag('config', 'UA-94034622-3');
-    </script>
-    <!-- /END GA -->
 </head>
+<!-- [Head] end -->
+<!-- [Body] Start -->
 
 <body>
-    <div id="app">
-        <section class="section">
-            <div class="container mt-5">
-                <div class="row">
-                    <div
-                        class="col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-3 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
-                        <div class="text-center mb-2">
-                            <img src="{{ asset('backend/logo_simalaqbi.PNG') }}" alt="logo SIMALAQBI" class="img-fluid"
-                                style="max-width: 200px;">
-                        </div>
+    <!-- [ Pre-loader ] start -->
+    <div class="loader-bg">
+        <div class="loader-track">
+            <div class="loader-fill"></div>
+        </div>
+    </div>
+    <!-- [ Pre-loader ] End -->
 
-                        <div class="card card-primary">
-                            <div class="card-header">
-                                <h4>Login</h4>
+    <div class="auth-main">
+        <div class="auth-wrapper v3">
+            <div class="auth-form">
+                <div class="auth-header">
+                    <a href="#"><img src="{{ asset('backend/logosimalaqbisidebar.png') }}" alt="img"
+                            width="200px"></a>
+                </div>
+                <div class="card my-5">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-end mb-4">
+                            <h3 class="mb-0"><b>Login</b></h3>
+                        </div>
+                        <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
+                            @csrf
+
+                            <!-- Username -->
+                            <div class="form-group mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="email" name="email"
+                                    class="form-control @error('email') is-invalid @enderror" placeholder="Username"
+                                    value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
 
-                            <div class="card-body">
-                                <form method="POST" action="{{ route('login') }}" class="needs-validation"
-                                    novalidate="">
-                                    @csrf
-                                    <div class="form-group">
-                                        <label for="email">Email</label>
-                                        <input id="email" type="email"
-                                            class="form-control @error('email') is-invalid @enderror" name="email"
-                                            tabindex="1" value="{{ old('email') }}" required autocomplete="email">
-                                        <div class="invalid-feedback">
-                                            Masukkan Email
-                                        </div>
-                                        @error('email')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group">
-                                        <div class="d-block">
-                                            <label for="password" class="control-label">Password</label>
-                                        </div>
-                                        <input id="password" type="password"
-                                            class="form-control @error('password') is-invalid @enderror" name="password"
-                                            required autocomplete="current-password">
-                                        <div class="invalid-feedback">
-                                            Masukkan Password
-                                        </div>
-                                        @error('password')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button type="submit" class="btn btn-primary btn-lg btn-block" tabindex="4">
-                                            {{ __('Login') }}
-                                        </button>
-                                    </div>
-                                </form>
-
+                            <!-- Password -->
+                            <div class="form-group mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" name="password"
+                                    class="form-control @error('password') is-invalid @enderror" placeholder="Password"
+                                    required autocomplete="current-password">
+                                @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </div>
-                        </div>
-                        <div class="simple-footer">
-                            Copyright &copy; SIMALAQBI059 {{ now()->year }}
-                        </div>
+
+                            <!-- Submit -->
+                            <div class="d-grid mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    {{ __('Login') }}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+                <div class="auth-footer row">
+                    <!-- <div class=""> -->
+                    <div class="col my-1">
+                        <p class="m-0">Copyright © {{ now()->year }}</p>
+                    </div>
+                    <!-- </div> -->
+                </div>
             </div>
-        </section>
+        </div>
     </div>
-
-    <!-- General JS Scripts -->
-    <script src="{{ asset('backend/stisla/assets/modules/jquery.min.js') }}"></script>
-    <script src="{{ asset('backend/stisla/assets/modules/popper.js') }}"></script>
-    <script src="{{ asset('backend/stisla/assets/modules/tooltip.js') }}"></script>
-    <script src="{{ asset('backend/stisla/assets/modules/bootstrap/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('backend/stisla/assets/modules/nicescroll/jquery.nicescroll.min.js') }}"></script>
-    <script src="{{ asset('backend/stisla/assets/modules/moment.min.js') }}"></script>
-    <script src="{{ asset('backend/stisla/assets/js/stisla.js') }}"></script>
-
-    <!-- JS Libraies -->
-
-    <!-- Page Specific JS File -->
-
-    <!-- Template JS File -->
-    <script src="{{ asset('backend/stisla/assets/js/scripts.js') }}"></script>
-    <script src="{{ asset('backend/stisla/assets/js/custom.js') }}"></script>
+    <!-- [ Main Content ] end -->
+    <!-- Required Js -->
+    <script src="{{ asset('backend/mantis/assets/js/plugins/popper.min.js') }}"></script>
+    <script src="{{ asset('backend/mantis/assets/js/plugins/simplebar.min.js') }}"></script>
+    <script src="{{ asset('backend/mantis/assets/js/plugins/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('backend/mantis/assets/js/fonts/custom-font.js') }}"></script>
+    <script src="{{ asset('backend/mantis/assets/js/pcoded.js') }}"></script>
+    <script src="{{ asset('backend/mantis/assets/js/plugins/feather.min.js') }}"></script>
+    <script>
+        layout_change('light');
+    </script>
+    <script>
+        change_box_container('false');
+    </script>
+    <script>
+        layout_rtl_change('false');
+    </script>
+    <script>
+        preset_change("preset-1");
+    </script>
+    <script>
+        font_change("Public-Sans");
+    </script>
 </body>
+<!-- [Body] end -->
 
 </html>

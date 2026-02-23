@@ -1,0 +1,108 @@
+.ftco-animate {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.hero-title-custom {
+    max-width: 850px;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 1.3;
+}
+
+/* Baris 1 */
+.hero-line-1 {
+    display: block;
+    font-size: 34px;
+    font-weight: 500;
+    color: #ffffff;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Baris 2 */
+.hero-line-2 {
+    display: block;
+    font-size: 30px;
+    font-weight: 400;
+    color: #f1f1f1;
+    margin-top: 5px;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Baris 3 (lebih menonjol) */
+.hero-line-3 {
+    display: block;
+    font-size: 40px;
+    font-weight: 700;
+    margin-top: 15px;
+    color: #ffffff;
+    letter-spacing: 1px;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+.hero-btn-custom .btn {
+    padding: 6px 12px; /* lebih kecil dari px-4 py-3 */
+    font-size: 0.875rem; /* perkecil ukuran font */
+    border-radius: 4px; /* opsional, biar lebih compact */
+}
+
+.hero-wrap {
+    position: relative;
+}
+
+/* Logo pojok kiri atas */
+.hero-logo-top {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    z-index: 10; /* supaya di atas overlay */
+}
+
+.hero-logo-top img {
+    max-width: 120px;
+    height: auto;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+}
+
+/* Smooth zoom effect */
+.carousel-img-wrapper {
+    overflow: hidden;
+}
+
+.carousel-img-wrapper img {
+    transition: transform 6s ease;
+}
+
+.carousel-item.active .carousel-img-wrapper img {
+    transform: scale(1.08);
+}
+
+/* Indicator bulat lebih modern */
+.carousel-indicators li {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+@media (max-width: 768px) {
+    .hero-line-1 {
+        font-size: 24px;
+    }
+
+    .hero-line-2 {
+        font-size: 20px;
+    }
+
+    .hero-line-3 {
+        font-size: 26px;
+    }
+
+    .hero-logo-top {
+        top: 15px;
+        left: 15px;
+    }
+
+    .hero-logo-top img {
+        max-width: 90px;
+    }
+}

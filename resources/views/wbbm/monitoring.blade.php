@@ -25,7 +25,7 @@
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show mt-3">
             {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
@@ -36,15 +36,10 @@
             <div class="card p-3 mb-2" data-kategori="{{ $kategori->id }}">
 
                 <!-- HEADER KATEGORI -->
-                <div class="d-flex justify-content-between align-items-center" data-toggle="collapse"
-                    data-target="#menu-{{ $kategori->id }}" style="cursor: pointer;">
+                <div class="d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    data-bs-target="#menu-{{ $kategori->id }}" style="cursor: pointer;">
 
                     <div class="d-flex align-items-center">
-                        <div class="bg-primary text-white d-flex justify-content-center align-items-center"
-                            style="width: 28px; height: 28px; border-radius: 6px;">
-                            {{ $key + 1 }}
-                        </div>
-
                         <div class="ml-3 font-weight-bold">{{ $kategori->name }}</div>
                     </div>
 
@@ -77,8 +72,8 @@
                     @endforeach --}}
                     @foreach ($kategori->sub_categories as $sub)
                         <div class="card p-3 mb-1">
-                            <div class="d-flex justify-content-between align-items-center" data-toggle="collapse"
-                                data-target="#sub-{{ $sub->id }}" style="cursor: pointer;">
+                            <div class="d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                                data-bs-target="#sub-{{ $sub->id }}" style="cursor: pointer;">
 
                                 <div class="d-flex align-items-center ">
                                     <div class="ml-3 font-weight">{{ $loop->iteration }}. {{ $sub->name }} </div>
@@ -96,7 +91,7 @@
                                 @foreach ($sub->items as $item)
                                     <div class="card p-3">
                                         <div class="d-flex justify-content-between align-items-center"
-                                            data-toggle="collapse" data-target="#subitem-{{ $item->id }}"
+                                            data-bs-toggle="collapse" data-bs-target="#subitem-{{ $item->id }}"
                                             style="cursor: pointer;">
                                             @php
                                                 $huruf = range('a', 'z'); // menghasilkan: a, b, c, ... z
@@ -157,17 +152,6 @@
 
                                                             {{-- Form Upload --}}
                                                             <td>
-                                                                {{-- Tampil tombol lihat jika ada file --}}
-                                                                {{-- <form class="ajax-upload" data-id="{{ $dok->id }}"
-                                                                    enctype="multipart/form-data">
-                                                                    @csrf
-                                                                    <input type="file" name="file"
-                                                                        class="form-control form-control-sm mb-2" required>
-                                                                    <button type="submit"
-                                                                        class="btn btn-primary btn-sm">Upload</button>
-
-                                                                    <div class="upload-status mt-1"></div>
-                                                                </form> --}}
                                                                 <form class="ajax-upload" data-id="{{ $dok->id }}"
                                                                     enctype="multipart/form-data">
                                                                     @csrf

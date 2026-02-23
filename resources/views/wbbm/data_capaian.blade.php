@@ -16,8 +16,8 @@
 
     <div class="card card-body container-fluid mb-2">
         <table class="table table-bordered" style="font-size: 14px;">
-            <thead class="text-center font-weight-bold text-white">
-                <tr style="background:#3F4E6B;">
+            <thead class="text-center fw-bold text-white">
+                <tr style="background-color:#3F4E6B;">
                     <th style="width: 50%;">Rencana Kerja</th>
                     <th style="width: 45%;">Bukti Dukung</th>
                     <th style="width: 5%;">Action</th>
