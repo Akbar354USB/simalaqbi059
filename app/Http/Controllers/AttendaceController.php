@@ -9,6 +9,7 @@ use App\Models\WorkShift;
 use App\Services\GeoService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -283,5 +284,19 @@ class AttendaceController extends Controller
         ])->setPaper('A4', 'landscape');
 
         return $pdf->stream('data-absensi.pdf');
+    }
+
+    public function dashboardabsensi()
+    {
+        $attendances = auth()->user()
+            ->employee
+            ->attendances()
+            ->with('workShift')
+            ->latest('attendance_date')
+            ->latest('check_in_time')
+            ->limit(5)
+            ->get();
+
+        return view('attendance.dashboard_presensi', compact('attendances'));
     }
 }

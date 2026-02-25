@@ -64,6 +64,9 @@
                 </button>
             </div>
         </div>
+        <a href="{{ route('dashboard-absen') }}" class="btn btn-primary btn-sm shadow-sm mb-1">
+            Dashboard
+        </a>
     </div>
 @endsection
 

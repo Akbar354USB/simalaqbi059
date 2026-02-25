@@ -69,6 +69,7 @@ Route::middleware(['auth', 'ChekRole:superadmin,unit_head,head_office,pegawai', 
 Route::middleware('auth', 'ChekRole:superadmin,ppnpn')->group(function () {
     Route::get('/attendance', [AttendaceController::class, 'index'])->name('attendance.index');
     Route::post('/attendance/store', [AttendaceController::class, 'store'])->name('attendance.store');
+    Route::get('/dashboard-presensi', [AttendaceController::class, 'dashboardabsensi'])->name('dashboard-absen');
 });
 
 Route::middleware('auth', 'ChekRole:superadmin,resepsionis')->group(function () {
@@ -208,15 +209,6 @@ Route::middleware('auth', 'ChekRole:superadmin')->group(function () {
     Route::get('/work-units/create', [WorkUnitController::class, 'create'])->name('work-units.create');
     Route::post('/work-units', [WorkUnitController::class, 'store'])->name('work-units.store');
     Route::delete('/work-units/{id}', [WorkUnitController::class, 'destroy'])->name('work-units.destroy');
-
-    /*Employee Face Routes*/
-    Route::get('/employee-faces', [EmployeeFaceController::class, 'index'])
-        ->name('employee-faces.index');
-    Route::get('/employee-faces/create', [EmployeeFaceController::class, 'create'])
-        ->name('employee-faces.create');
-    Route::post('/employee-faces', [EmployeeFaceController::class, 'store'])
-        ->name('employee-faces.store');
-    Route::delete('/employee-faces/{employeeFace}', [EmployeeFaceController::class, 'destroy'])->name('employee-faces.destroy');
 });
 
 

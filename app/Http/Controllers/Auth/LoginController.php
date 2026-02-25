@@ -71,7 +71,7 @@ class LoginController extends Controller
 
         // 🔐 PPNPN
         if ($user->role === 'ppnpn') {
-            return redirect()->route('attendance.index');
+            return redirect()->route('dashboard-absen');
         }
 
         // 🔐 Resepsionis
