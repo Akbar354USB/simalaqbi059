@@ -79,7 +79,7 @@
             </div>
             <!-- CARD LEMBUR -->
             <div class="col-6">
-                <a href="#" class="text-decoration-none">
+                <a href="{{ route('overtime.create') }}" class="text-decoration-none">
                     <div class="card shadow border-0 h-100 text-center hover-card bg-primary bg-opacity-25">
                         <div class="card-body d-flex flex-column justify-content-center p-3">
                             <div class="mb-2">
@@ -195,9 +195,26 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan="4">Data Lembur belum tersedia</td>
-                            </tr>
+                            @forelse ($overtimes as $overtime)
+                                <tr>
+                                    <td>{{ \Carbon\Carbon::parse($overtime->overtime_date)->format('d M Y') }}</td>
+                                    <td>{{ $overtime->start_time }}</td>
+                                    <td>{{ $overtime->end_time }}</td>
+                                    <td>
+                                        @if ($overtime->status == 'pending')
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        @elseif ($overtime->status == 'approved')
+                                            <span class="badge bg-success">Approved</span>
+                                        @else
+                                            <span class="badge bg-danger">Rejected</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4">Data Lembur belum tersedia</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

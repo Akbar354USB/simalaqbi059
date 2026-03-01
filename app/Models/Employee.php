@@ -66,4 +66,22 @@ class Employee extends Model
     {
         return $this->hasMany(WorkUnit::class, 'employee_id');
     }
+
+    // Relasi ke pengajuan lembur
+    public function overtimeRequests()
+    {
+        return $this->hasMany(OvertimeRequest::class);
+    }
+
+    // Relasi sebagai approver (pimpinan Sub Bagian Umum)
+    public function approvedOvertimes()
+    {
+        return $this->hasMany(OvertimeApproval::class, 'approved_by');
+    }
+
+    // Relasi ke work unit sebagai pimpinan
+    public function headedWorkUnit()
+    {
+        return $this->hasOne(WorkUnit::class, 'employee_id');
+    }
 }

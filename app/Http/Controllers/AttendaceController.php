@@ -288,6 +288,8 @@ class AttendaceController extends Controller
 
     public function dashboardabsensi()
     {
+        $employee = auth()->user()->employee;
+
         $attendances = auth()->user()
             ->employee
             ->attendances()
@@ -297,6 +299,14 @@ class AttendaceController extends Controller
             ->limit(5)
             ->get();
 
-        return view('attendance.dashboard_presensi', compact('attendances'));
+        // ambil 5 data lembur terbaru
+        $overtimes = $employee
+            ->overtimeRequests()
+            ->latest('overtime_date')
+            ->latest('start_time')
+            ->limit(5)
+            ->get();
+
+        return view('attendance.dashboard_presensi', compact('attendances', 'overtimes'));
     }
 }

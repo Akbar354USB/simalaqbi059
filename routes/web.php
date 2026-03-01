@@ -20,7 +20,7 @@ use App\Http\Controllers\AttendaceController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\WorkShiftController;
 use App\Http\Controllers\WorkUnitController;
-use App\Http\Controllers\EmployeeFaceController;
+use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\HeadOfficeApprovalController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\UnitHeadApprovalController;
@@ -43,6 +43,16 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', [LandingController::class, 'landing'])->name('landing');
+
+// INDEX (list data)
+Route::get('/overtime', [OvertimeRequestController::class, 'index'])->name('overtime.index');
+Route::get('/overtime/create', [OvertimeRequestController::class, 'create'])->name('overtime.create');
+Route::post('/overtime', [OvertimeRequestController::class, 'store'])->name('overtime.store');
+Route::get('/overtime/{id}/edit', [OvertimeRequestController::class, 'edit'])->name('overtime.edit');
+Route::put('/overtime/{id}', [OvertimeRequestController::class, 'update'])->name('overtime.update');
+Route::delete('/overtime/{id}', [OvertimeRequestController::class, 'destroy'])->name('overtime.destroy');
+Route::post('/overtime/{id}/approve', [OvertimeRequestController::class, 'approve'])->name('overtime.approve');
+Route::post('/overtime/{id}/reject', [OvertimeRequestController::class, 'reject'])->name('overtime.reject');
 
 Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])
     ->middleware('auth')

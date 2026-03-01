@@ -150,7 +150,7 @@
                     </li>
                     <li class="pc-item pc-hasmenu">
                         <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-user-check"></i>
-                            </span><span class="pc-mtext">Absensi PPNPN</span><span class="pc-arrow"><i
+                            </span><span class="pc-mtext">PPNPN</span><span class="pc-arrow"><i
                                     data-feather="chevron-right"></i></span></a>
                         <ul class="pc-submenu">
                             <li class="pc-item"><a class="pc-link" href="{{ route('work-shifts.index') }}">Pembagian
@@ -159,6 +159,8 @@
                             <li class="pc-item"><a class="pc-link" href="{{ route('attendance.index') }}">Halaman
                                     Absensi</a></li>
                             <li class="pc-item"><a class="pc-link" href="{{ route('attendances.data') }}">Data Absensi
+                                    PPNPN</a></li>
+                            <li class="pc-item"><a class="pc-link" href="{{ route('overtime.index') }}">Data Lembur
                                     PPNPN</a></li>
                         </ul>
                     </li>
@@ -196,7 +198,8 @@
                             <li class="pc-item"><a class="pc-link"
                                     href="{{ route('additional-leave-requests.index') }}">Data Pengajuan
                                     Cuti</a></li>
-                            <li class="pc-item"><a class="pc-link" href="{{ route('additional-leaves.index') }}">Kuota
+                            <li class="pc-item"><a class="pc-link"
+                                    href="{{ route('additional-leaves.index') }}">Kuota
                                     Cuti Pegawai</a></li>
                         </ul>
                     </li>

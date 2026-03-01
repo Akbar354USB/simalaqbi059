@@ -13,11 +13,6 @@ use Illuminate\Support\Facades\Storage;
 
 class GetWbbmController extends Controller
 {
-    // public function monitorWbbm()
-    // {
-    //     return view('wbbm.monitoring');
-    // }
-
     public function monitorWbbm()
     {
         $categories = Categories::with([
