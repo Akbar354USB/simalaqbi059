@@ -86,7 +86,8 @@
                                 <td>{{ $g->number_phone }}</td>
                                 <td>{{ $g->agency->agency_name }}</td>
                                 <td>{{ $g->objective }}</td>
-                                <td><span class="badge badge-success">
+                                <td>
+                                    <span class="badge bg-success">
                                         {{ $g->arrival_time }}
                                     </span>
                                 </td>
@@ -94,11 +95,11 @@
                                 {{-- JAM PULANG --}}
                                 <td>
                                     @if ($g->departure_time)
-                                        <span class="badge badge-success">
+                                        <span class="badge bg-success">
                                             {{ $g->departure_time }}
                                         </span>
                                     @else
-                                        <span class="badge badge-warning">
+                                        <span class="badge bg-warning text-dark">
                                             On Progress
                                         </span>
                                     @endif
@@ -106,7 +107,7 @@
 
                                 <td>
                                     @foreach ($g->employees as $emp)
-                                        <span class="badge badge-info">
+                                        <span class="badge bg-info text-dark me-1">
                                             {{ $emp->employee_name }}
                                         </span>
                                     @endforeach

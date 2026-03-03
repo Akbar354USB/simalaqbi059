@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class GuestBook extends Model
 {
-    protected $fillable = ['guest_name', 'number_phone',  'agency_id', 'objective', 'arrival_time'];
+    protected $fillable = ['guest_name', 'number_phone',  'agency_id', 'objective', 'arrival_time', 'departure_time'];
 
     public function employees()
     {

@@ -200,6 +200,8 @@ class GuestBookController extends Controller
             'number_phone' => $request->number_phone,
             'agency_id'       => $request->agency_id,
             'objective'    => $request->objective,
+            'arrival_time'       => $request->arrival_time,
+            'departure_time'    => $request->departure_time,
         ]);
 
         // Update relasi pegawai

@@ -62,16 +62,6 @@
                         @enderror
                     </div>
 
-                    {{-- Instansi --}}
-                    {{-- <div class="form-group">
-                        <label>Nama Instansi/Satker</label>
-                        <input type="text" name="agency" class="form-control @error('agency') is-invalid @enderror"
-                            value="{{ old('agency', $guest->agency) }}">
-                        @error('agency')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div> --}}
-
                     <div class="form-group">
                         <label>Nama Instansi / Satker</label>
                         <select name="agency_id" class="form-control @error('agency_id') is-invalid @enderror">
@@ -112,6 +102,18 @@
                         @enderror
                     </div>
 
+                    {{-- Jam Pulang --}}
+                    <div class="form-group">
+                        <label>Jam Pulang</label>
+                        <input type="time" name="departure_time"
+                            class="form-control @error('departure_time') is-invalid @enderror"
+                            value="{{ old('departure_time', $guest->departure_time) }}">
+
+                        @error('departure_time')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     {{-- Pegawai Yang Ingin Ditemui --}}
                     <div class="form-group">
                         <label>Pegawai Yang Ingin Ditemui</label>
@@ -130,7 +132,8 @@
                             @endforeach
                         </select>
                     </div>
-
+                    <a href="{{ route('guest_book_index') }}"><button type="button"
+                            class="btn btn-info">Kembali</button></a>
                     <button type="submit" class="btn btn-primary">Update</button>
 
                 </form>
