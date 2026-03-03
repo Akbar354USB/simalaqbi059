@@ -10,8 +10,8 @@
 
             <div class="card-body">
 
-                {{-- FILTER --}}
-                <form method="GET" action="{{ route('attendances.data') }}">
+
+                {{-- <form method="GET" action="{{ route('attendances.data') }}">
                     <div class="row align-items-end mb-3">
 
                         <div class="col-md-3">
@@ -26,20 +26,88 @@
 
                         <div class="col-md-6 d-flex justify-content-end gap-2">
 
-                            {{-- FILTER --}}
+
                             <button type="submit" class="btn btn-primary">
                                 🔍 Filter
                             </button>
 
-                            {{-- RESET --}}
+
                             <a href="{{ route('attendances.data') }}" class="btn btn-secondary ml-2">
                                 🔄 Reset
                             </a>
 
-                            {{-- PDF --}}
                             <a href="{{ route('attendances.printPdf', request()->query()) }}" class="btn btn-success ml-2"
                                 target="_blank">
                                 🖨️ PDF
+                            </a>
+
+                        </div>
+                    </div>
+                </form> --}}
+
+                {{-- FILTER --}}
+                <form method="GET" action="{{ route('attendances.data') }}">
+                    <div class="row align-items-end mb-3">
+
+                        <div class="col-md-2">
+                            <label>Tanggal</label>
+                            <input type="date" name="date" class="form-control" value="{{ request('date') }}">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label>Bulan</label>
+                            <input type="month" name="month" class="form-control" value="{{ request('month') }}">
+                        </div>
+
+                        {{-- FILTER PEGAWAI --}}
+                        <div class="col-md-3">
+                            <label>Nama Pegawai</label>
+                            <select name="employee_id" class="form-control">
+                                <option value="">-- Semua Pegawai --</option>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->id }}"
+                                        {{ request('employee_id') == $employee->id ? 'selected' : '' }}>
+                                        {{ $employee->employee_name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- FILTER SHIFT --}}
+                        <div class="col-md-3">
+                            <label>Shift</label>
+                            <select name="work_shift_id" class="form-control">
+                                <option value="">-- Semua Shift --</option>
+                                @foreach ($workShifts as $shift)
+                                    <option value="{{ $shift->id }}"
+                                        {{ request('work_shift_id') == $shift->id ? 'selected' : '' }}>
+                                        {{ $shift->shift_name }}
+                                        ({{ $shift->start_time }} - {{ $shift->end_time }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-flex gap-2">
+
+                            {{-- FILTER --}}
+                            <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center"
+                                style="width:45px; height:45px;" title="Filter">
+                                <i class="ti ti-filter fs-3"></i>
+                            </button>
+
+                            {{-- RESET --}}
+                            <a href="{{ route('attendances.data') }}"
+                                class="btn btn-secondary d-flex align-items-center justify-content-center"
+                                style="width:45px; height:45px;" title="Reset">
+                                <i class="ti ti-refresh fs-3"></i>
+                            </a>
+
+                            {{-- PDF --}}
+                            <a href="{{ route('attendances.printPdf', request()->query()) }}"
+                                class="btn btn-success d-flex align-items-center justify-content-center"
+                                style="width:45px; height:45px;" target="_blank" title="Cetak PDF">
+                                <i class="ti ti-file-text fs-3"></i>
                             </a>
 
                         </div>

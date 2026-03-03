@@ -147,18 +147,28 @@
     </h3>
 
     <!-- ================= FILTER INFO ================= -->
+
     @php
         \Carbon\Carbon::setLocale('id');
+
+        $periode = 'Semua Data';
+
+        if (!empty($filters['date'])) {
+            $periode = \Carbon\Carbon::parse($filters['date'])->translatedFormat('d F Y');
+        } elseif (!empty($filters['month'])) {
+            $periode = \Carbon\Carbon::parse($filters['month'])->translatedFormat('F Y');
+        }
     @endphp
 
     <p style="font-size:12px; margin-bottom: 12px;">
-        <b>Data :</b>
-        @if (request()->filled('date'))
-            {{ \Carbon\Carbon::parse(request('date'))->translatedFormat('d F Y') }}
-        @elseif (request()->filled('month'))
-            {{ \Carbon\Carbon::parse(request('month'))->translatedFormat('F Y') }}
-        @else
-            Semua Data
+        <b>Data :</b> {{ $periode }}
+
+        @if (!empty($filters['employee_name']))
+            | <b>Pegawai :</b> {{ $filters['employee_name'] }}
+        @endif
+
+        @if (!empty($filters['shift_name']))
+            | <b>Shift :</b> {{ $filters['shift_name'] }}
         @endif
     </p>
 

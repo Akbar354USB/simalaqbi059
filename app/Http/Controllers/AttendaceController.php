@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Employee;
 use Carbon\Carbon;
 use App\Models\OfficeLocation;
 use App\Models\WorkShift;
@@ -180,24 +181,70 @@ class AttendaceController extends Controller
         ]);
     }
 
+    // public function dataindex(Request $request)
+    // {
+    //     $query = Attendance::with(['employee', 'workShift'])
+    //         ->orderByDesc('attendance_date')
+    //         ->orderByDesc('check_in_time');
+
+    //     if ($request->filled('date')) {
+    //         $query->whereDate('attendance_date', $request->date);
+    //     }
+
+    //     if ($request->filled('month')) {
+    //         $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
+    //             ->whereYear('attendance_date', date('Y', strtotime($request->month)));
+    //     }
+
+    //     $attendances = $query->paginate(20);
+
+    //     return view('attendance.dataindex', compact('attendances'));
+    // }
+
     public function dataindex(Request $request)
     {
         $query = Attendance::with(['employee', 'workShift'])
+            ->whereHas('employee', function ($q) {
+                $q->where('status', 'PPNPN'); // ✅ hanya PPNPN
+            })
             ->orderByDesc('attendance_date')
             ->orderByDesc('check_in_time');
 
+        // FILTER TANGGAL
         if ($request->filled('date')) {
             $query->whereDate('attendance_date', $request->date);
         }
 
+        // FILTER BULAN
         if ($request->filled('month')) {
             $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
                 ->whereYear('attendance_date', date('Y', strtotime($request->month)));
         }
 
-        $attendances = $query->paginate(20);
+        // FILTER NAMA PEGAWAI
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
 
-        return view('attendance.dataindex', compact('attendances'));
+        // FILTER SHIFT
+        if ($request->filled('work_shift_id')) {
+            $query->where('work_shift_id', $request->work_shift_id);
+        }
+
+        $attendances = $query->paginate(20)->withQueryString();
+
+        // Dropdown hanya PPNPN
+        $employees = Employee::where('status', 'PPNPN')
+            ->orderBy('employee_name')
+            ->get();
+
+        $workShifts = WorkShift::orderBy('shift_name')->get();
+
+        return view('attendance.dataindex', compact(
+            'attendances',
+            'employees',
+            'workShifts'
+        ));
     }
 
     public function destroy(Attendance $attendance)
@@ -256,21 +303,64 @@ class AttendaceController extends Controller
             ->with('success', 'SEMUA data absensi dan foto berhasil dihapus');
     }
 
+    // public function printPdf(Request $request)
+    // {
+    //     $query = Attendance::with(['employee', 'workShift'])
+    //         ->orderBy('attendance_date', 'asc')
+    //         ->orderBy('check_in_time', 'asc'); // ✅ GANTI
+
+    //     // Filter tanggal
+    //     if ($request->filled('date')) {
+    //         $query->whereDate('attendance_date', $request->date);
+    //     }
+
+    //     // Filter bulan
+    //     if ($request->filled('month')) {
+    //         $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
+    //             ->whereYear('attendance_date', date('Y', strtotime($request->month)));
+    //     }
+
+    //     $attendances = $query->get();
+
+    //     $pdf = Pdf::loadView('attendance.pdf', [
+    //         'attendances' => $attendances,
+    //         'filters' => [
+    //             'date'  => $request->date,
+    //             'month' => $request->month,
+    //         ]
+    //     ])->setPaper('A4', 'landscape');
+
+    //     return $pdf->stream('data-absensi.pdf');
+    // }
+
     public function printPdf(Request $request)
     {
         $query = Attendance::with(['employee', 'workShift'])
+            ->whereHas('employee', function ($q) {
+                $q->where('status', 'PPNPN'); // ✅ hanya PPNPN
+            })
             ->orderBy('attendance_date', 'asc')
-            ->orderBy('check_in_time', 'asc'); // ✅ GANTI
+            ->orderBy('check_in_time', 'asc');
 
-        // Filter tanggal
+        // ✅ Filter tanggal
         if ($request->filled('date')) {
             $query->whereDate('attendance_date', $request->date);
         }
 
-        // Filter bulan
+        // ✅ Filter bulan
         if ($request->filled('month')) {
             $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
                 ->whereYear('attendance_date', date('Y', strtotime($request->month)));
+        }
+
+        // ✅ Filter pegawai
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        // ✅ Filter shift
+        if ($request->filled('work_shift_id')) {
+            $query->where('work_shift_id', $request->work_shift_id);
         }
 
         $attendances = $query->get();
@@ -278,8 +368,10 @@ class AttendaceController extends Controller
         $pdf = Pdf::loadView('attendance.pdf', [
             'attendances' => $attendances,
             'filters' => [
-                'date'  => $request->date,
-                'month' => $request->month,
+                'date'          => $request->date,
+                'month'         => $request->month,
+                'employee_id'   => $request->employee_id,
+                'work_shift_id' => $request->work_shift_id,
             ]
         ])->setPaper('A4', 'landscape');
 
