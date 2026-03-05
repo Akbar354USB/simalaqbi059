@@ -181,26 +181,6 @@ class AttendaceController extends Controller
         ]);
     }
 
-    // public function dataindex(Request $request)
-    // {
-    //     $query = Attendance::with(['employee', 'workShift'])
-    //         ->orderByDesc('attendance_date')
-    //         ->orderByDesc('check_in_time');
-
-    //     if ($request->filled('date')) {
-    //         $query->whereDate('attendance_date', $request->date);
-    //     }
-
-    //     if ($request->filled('month')) {
-    //         $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
-    //             ->whereYear('attendance_date', date('Y', strtotime($request->month)));
-    //     }
-
-    //     $attendances = $query->paginate(20);
-
-    //     return view('attendance.dataindex', compact('attendances'));
-    // }
-
     public function dataindex(Request $request)
     {
         $query = Attendance::with(['employee', 'workShift'])
@@ -303,35 +283,6 @@ class AttendaceController extends Controller
             ->with('success', 'SEMUA data absensi dan foto berhasil dihapus');
     }
 
-    // public function printPdf(Request $request)
-    // {
-    //     $query = Attendance::with(['employee', 'workShift'])
-    //         ->orderBy('attendance_date', 'asc')
-    //         ->orderBy('check_in_time', 'asc'); // ✅ GANTI
-
-    //     // Filter tanggal
-    //     if ($request->filled('date')) {
-    //         $query->whereDate('attendance_date', $request->date);
-    //     }
-
-    //     // Filter bulan
-    //     if ($request->filled('month')) {
-    //         $query->whereMonth('attendance_date', date('m', strtotime($request->month)))
-    //             ->whereYear('attendance_date', date('Y', strtotime($request->month)));
-    //     }
-
-    //     $attendances = $query->get();
-
-    //     $pdf = Pdf::loadView('attendance.pdf', [
-    //         'attendances' => $attendances,
-    //         'filters' => [
-    //             'date'  => $request->date,
-    //             'month' => $request->month,
-    //         ]
-    //     ])->setPaper('A4', 'landscape');
-
-    //     return $pdf->stream('data-absensi.pdf');
-    // }
 
     public function printPdf(Request $request)
     {
@@ -400,5 +351,54 @@ class AttendaceController extends Controller
             ->get();
 
         return view('attendance.dashboard_presensi', compact('attendances', 'overtimes'));
+    }
+
+    public function exportCsv()
+    {
+        $fileName = 'laporan-absensi-' . date('Y-m-d') . '.csv';
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate",
+            "Expires"             => "0",
+        ];
+
+        $columns = [
+            'Nama Pegawai',
+            'Tanggal',
+            'Jam Masuk',
+            'Jam Pulang',
+            'Shift'
+        ];
+
+        $callback = function () use ($columns) {
+            $file = fopen('php://output', 'w');
+
+            // Tambahkan BOM supaya tidak rusak di Excel
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header kolom
+            fputcsv($file, $columns);
+
+            $attendances = Attendance::with(['employee', 'workShift'])
+                ->orderBy('attendance_date', 'desc')
+                ->get();
+
+            foreach ($attendances as $attendance) {
+                fputcsv($file, [
+                    $attendance->employee->name ?? '-',
+                    $attendance->attendance_date,
+                    $attendance->check_in_time,
+                    $attendance->check_out_time,
+                    $attendance->workShift->shift_name ?? '-',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

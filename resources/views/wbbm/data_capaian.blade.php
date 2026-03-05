@@ -65,9 +65,22 @@
                                 @endphp
                                 <td>{{ $huruf[$loop->index] }}. {{ $item->name }}</td>
                                 <td>
-                                    @foreach ($item->item_documents as $dok)
+                                    {{-- @foreach ($item->item_documents as $dok)
                                         - {{ $dok->document_name }}<br>
+                                    @endforeach --}}
+                                    {{-- tambah --}}
+                                    @foreach ($item->item_documents as $dok)
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span>• {{ $dok->document_name }}</span>
+
+                                            @if ($dok->upload)
+                                                <span class="badge bg-success">ADA</span>
+                                            @else
+                                                <span class="badge bg-danger">BELUM ADA</span>
+                                            @endif
+                                        </div>
                                     @endforeach
+                                    {{-- finis tambah --}}
                                 </td>
                                 <td>
                                     <form action="{{ route('item-delete', $item->id) }}" method="post"

@@ -88,7 +88,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-2 d-flex gap-2">
+                        <div class="col-md-2 d-flex gap-2 ms-n3">
 
                             {{-- FILTER --}}
                             <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center"
@@ -109,6 +109,16 @@
                                 style="width:45px; height:45px;" target="_blank" title="Cetak PDF">
                                 <i class="ti ti-file-text fs-3"></i>
                             </a>
+
+                            <a href="{{ route('attendances.export.csv') }}"
+                                class="btn btn-success d-flex align-items-center justify-content-center"
+                                style="width:45px; height:45px;" target="_blank" title="Cetak CSV">
+                                <i class="ti ti-table fs-3"></i>
+                            </a>
+
+                            {{-- <a href="{{ route('attendances.export.csv') }}" class="btn btn-success">
+                                Export CSV
+                            </a> --}}
 
                         </div>
                     </div>

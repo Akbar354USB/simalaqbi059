@@ -44,6 +44,9 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', [LandingController::class, 'landing'])->name('landing');
 
+Route::get('/attendances/export/csv', [AttendaceController::class, 'exportCsv'])
+    ->name('attendances.export.csv');
+
 // INDEX (list data)
 Route::get('/overtime', [OvertimeRequestController::class, 'index'])->name('overtime.index');
 Route::get('/overtime/create', [OvertimeRequestController::class, 'create'])->name('overtime.create');
