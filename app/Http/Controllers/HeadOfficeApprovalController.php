@@ -34,9 +34,9 @@ class HeadOfficeApprovalController extends Controller
             ->firstOrFail();
 
         $leaveRequest->update([
-            'status' => 'approved',
+            'status' => 'pending_general_affairs',
             'approved_by_head_office' => auth()->id(),
-            'approved_head_office_at' => now(),
+            'approved_head_office_at' => now()
         ]);
 
         return back()->with('success', 'Pengajuan cuti disetujui kepala kantor');
@@ -47,7 +47,7 @@ class HeadOfficeApprovalController extends Controller
         $leaveRequest = AdditionalLeaveRequest::findOrFail($id);
 
         $leaveRequest->update([
-            'status' => 'rejected',
+            'status' => 'rejected_head_office',
             'approved_by_head_office' => auth()->id(),
             'approved_head_office_at' => now(),
         ]);

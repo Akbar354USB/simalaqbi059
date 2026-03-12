@@ -8,33 +8,104 @@ use Illuminate\Http\Request;
 
 class UnitHeadApprovalController extends Controller
 {
+    // public function index()
+    // {
+    //     $user = auth()->user();
+
+    //     // ambil employee pimpinan
+    //     $employee = $user->employee;
+
+    //     // cari unit yang dia pimpin
+    //     $workUnit = WorkUnit::where('employee_id', $employee->id)->first();
+
+    //     if (!$workUnit) {
+    //         return view('approvals.unit_head.index', [
+    //             'requests' => collect()
+    //         ]);
+    //     }
+
+    //     $requests = AdditionalLeaveRequest::with([
+    //         'employee',
+    //         'periods',
+    //         'workUnit'
+    //     ])
+    //         ->where('status', 'pending_unit_head')
+    //         ->where('work_unit_id', $workUnit->id) // ✅ KUNCI UTAMA
+    //         ->latest()
+    //         ->get();
+
+    //     return view('approvals.unit_head.index', compact('requests'));
+    // }
+
     public function index()
     {
         $user = auth()->user();
-
-        // ambil employee pimpinan
         $employee = $user->employee;
 
-        // cari unit yang dia pimpin
+        // unit yang dipimpin user
         $workUnit = WorkUnit::where('employee_id', $employee->id)->first();
 
-        if (!$workUnit) {
-            return view('approvals.unit_head.index', [
-                'requests' => collect()
-            ]);
+        /*
+    |--------------------------------------------------------------------------
+    | DATA APPROVAL PIMPINAN UNIT
+    |--------------------------------------------------------------------------
+    */
+
+        $unitHeadRequests = collect();
+
+        if ($workUnit) {
+
+            $unitHeadRequests = AdditionalLeaveRequest::with([
+                'employee',
+                'periods',
+                'workUnit'
+            ])
+                ->where('status', 'pending_unit_head')
+                ->where('work_unit_id', $workUnit->id)
+                ->latest()
+                ->get();
         }
 
-        $requests = AdditionalLeaveRequest::with([
-            'employee',
-            'periods',
-            'workUnit'
-        ])
-            ->where('status', 'pending_unit_head')
-            ->where('work_unit_id', $workUnit->id) // ✅ KUNCI UTAMA
-            ->latest()
-            ->get();
 
-        return view('approvals.unit_head.index', compact('requests'));
+        /*
+    |--------------------------------------------------------------------------
+    | CEK APAKAH USER ADALAH KASUBAG UMUM
+    |--------------------------------------------------------------------------
+    */
+
+        $isGeneralAffairs = false;
+
+        if ($workUnit && strtolower($workUnit->work_unit) == 'sub bagian umum') {
+            $isGeneralAffairs = true;
+        }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | DATA PENETAPAN KASUBAG UMUM
+    |--------------------------------------------------------------------------
+    */
+
+        $generalAffairsRequests = collect();
+
+        if ($isGeneralAffairs) {
+
+            $generalAffairsRequests = AdditionalLeaveRequest::with([
+                'employee',
+                'periods',
+                'workUnit'
+            ])
+                ->where('status', 'pending_general_affairs')
+                ->latest()
+                ->get();
+        }
+
+
+        return view('approvals.unit_head.index', [
+            'unitHeadRequests' => $unitHeadRequests,
+            'generalAffairsRequests' => $generalAffairsRequests,
+            'isGeneralAffairs' => $isGeneralAffairs
+        ]);
     }
 
 
@@ -62,10 +133,16 @@ class UnitHeadApprovalController extends Controller
         }
 
         // Update status
+        // $leaveRequest->update([
+        //     'status' => 'approved_unit_head',
+        //     'approved_by_unit_head' => $user->id,
+        //     'approved_unit_head_at' => now(),
+        // ]);
+
         $leaveRequest->update([
-            'status' => 'approved_unit_head',
+            'status' => 'pending_head_office',
             'approved_by_unit_head' => $user->id,
-            'approved_unit_head_at' => now(),
+            'approved_unit_head_at' => now()
         ]);
 
         return back()->with('success', 'Pengajuan cuti disetujui');
@@ -96,7 +173,6 @@ class UnitHeadApprovalController extends Controller
             'approved_by_unit_head' => $user->id,
             'approved_unit_head_at' => now(),
         ]);
-
         return back()->with('success', 'Pengajuan cuti ditolak');
     }
 }

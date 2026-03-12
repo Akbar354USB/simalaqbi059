@@ -224,23 +224,38 @@
                         </a>
                     </li>
                     @if (Auth::user()->role == 'head_office')
-                        <li><a class="nav-link" href="{{ route('head-office.approvals.index') }}"><i
-                                    class="fas fa-check-circle"></i>
-                                <span>Approve Cuti</span></a>
+                        <li class="pc-item">
+                            <a href="{{ route('head-office.approvals.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
+                                <span class="pc-mtext">Approve Cuti</span>
+                            </a>
                         </li>
                     @endif
                     @if (Auth::user()->role == 'unit_head')
-                        <li><a class="nav-link" href="{{ route('unit-head.approvals.index') }}"><i
-                                    class="fas fa-check-circle"></i>
-                                <span>Approve Cuti</span></a>
+                        <li class="pc-item">
+                            <a href="{{ route('unit-head.approvals.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-circle-check"></i></span>
+                                <span class="pc-mtext">Approve Cuti</span>
+                            </a>
                         </li>
                     @endif
-                    <li><a class="nav-link" href="{{ route('additional-leave-requests.history') }}"><i
-                                class="fas fa-calendar-check"></i>
-                            <span>Cuti Tambahan</span></a>
+                    <li class="pc-item">
+                        <a href="{{ route('additional-leave-requests.history') }}" class="pc-link">
+                            <span class="pc-micon"><i class="ti ti-calendar-event"></i></span>
+                            <span class="pc-mtext">Cuti Tambahan</span>
+                        </a>
                     </li>
-                    <li><a class="nav-link" href="{{ route('wbbm-data') }}"><i class="fas fa-chart-line"></i>
-                            <span>WBK-WBBM</span></a>
+                    <li class="pc-item pc-hasmenu">
+                        <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-chart-line"></i>
+                            </span><span class="pc-mtext">WBK - WBBM</span><span class="pc-arrow"><i
+                                    data-feather="chevron-right"></i></span></a>
+                        <ul class="pc-submenu">
+                            <li class="pc-item"><a class="pc-link" href="{{ route('wbbm-tes-progres') }}">Cek
+                                    Progress</a></li>
+                            <li class="pc-item"><a class="pc-link" href="{{ route('wbbm-data') }}">Indikator
+                                    Capaian</a>
+                            </li>
+                        </ul>
                     </li>
                 @endif
             </ul>

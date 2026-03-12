@@ -34,7 +34,7 @@
 
                                     <td class="text-left">
                                         @foreach ($item->periods as $period)
-                                            <span class="badge badge-info d-block mb-1">
+                                            <span class="badge bg-info d-block mb-1">
                                                 {{ \Carbon\Carbon::parse($period->start_date)->format('d M Y') }}
                                                 s/d
                                                 {{ \Carbon\Carbon::parse($period->end_date)->format('d M Y') }}
@@ -48,19 +48,19 @@
 
                                     <td>
                                         @if ($item->status === 'approved_unit_head')
-                                            <span class="badge badge-warning">
+                                            <span class="badge bg-warning">
                                                 Menunggu Kepala Kantor
                                             </span>
                                         @elseif ($item->status === 'pending_head_office')
-                                            <span class="badge badge-warning">
+                                            <span class="badge bg-warning">
                                                 Menunggu Kepala Kantor
                                             </span>
                                         @elseif ($item->status === 'approved')
-                                            <span class="badge badge-success">
+                                            <span class="badge bg-success">
                                                 Disetujui
                                             </span>
                                         @elseif ($item->status === 'rejected')
-                                            <span class="badge badge-danger">
+                                            <span class="badge bg-danger">
                                                 Ditolak
                                             </span>
                                         @endif

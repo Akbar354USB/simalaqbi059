@@ -23,24 +23,59 @@ class AdditionalLeaveRequestController extends Controller
             'employee'
         ])->latest();
 
-        // 🔍 SEARCH: Nama / NIP / No Surat
+
+        /*
+    |--------------------------------------------------------------------------
+    | SEARCH KEYWORD
+    |--------------------------------------------------------------------------
+    */
+
         if ($request->filled('keyword')) {
-            $query->where(function ($q) use ($request) {
-                $q->where('letter_number', 'like', '%' . $request->keyword . '%')
-                    ->orWhereHas('employee', function ($emp) use ($request) {
-                        $emp->where('employee_name', 'like', '%' . $request->keyword . '%')
-                            ->orWhere('nip', 'like', '%' . $request->keyword . '%');
+
+            $keyword = $request->keyword;
+
+            $query->where(function ($q) use ($keyword) {
+
+                $q->where('letter_number', 'like', "%{$keyword}%")
+
+                    ->orWhereHas('employee', function ($emp) use ($keyword) {
+
+                        $emp->where('employee_name', 'like', "%{$keyword}%")
+                            ->orWhere('nip', 'like', "%{$keyword}%");
                     });
             });
         }
 
-        // 📅 FILTER PERIODE CUTI
-        if ($request->filled('start_date') && $request->filled('end_date')) {
+
+        /*
+    |--------------------------------------------------------------------------
+    | FILTER TANGGAL MULAI CUTI
+    |--------------------------------------------------------------------------
+    */
+
+        if ($request->filled('start_date')) {
+
             $query->whereHas('periods', function ($q) use ($request) {
-                $q->whereDate('start_date', '>=', $request->start_date)
-                    ->whereDate('end_date', '<=', $request->end_date);
+
+                $q->whereDate('start_date', '>=', $request->start_date);
             });
         }
+
+
+        /*
+    |--------------------------------------------------------------------------
+    | FILTER TANGGAL SELESAI CUTI
+    |--------------------------------------------------------------------------
+    */
+
+        if ($request->filled('end_date')) {
+
+            $query->whereHas('periods', function ($q) use ($request) {
+
+                $q->whereDate('end_date', '<=', $request->end_date);
+            });
+        }
+
 
         $requests = $query->get();
 
@@ -49,7 +84,6 @@ class AdditionalLeaveRequestController extends Controller
             compact('requests')
         );
     }
-
 
 
     public function create()
@@ -78,6 +112,8 @@ class AdditionalLeaveRequestController extends Controller
         $request->validate([
             'position'          => 'required|string',
             'length_of_service' => 'required|string',
+            // 'years' => 'required|integer|min:0',
+            // 'months' => 'required|integer|min:0|max:11',
             'work_unit_id'      => 'required|exists:work_units,id',
             'leave_reason'      => 'required|string',
             'phone'             => 'required|string',
@@ -141,7 +177,7 @@ class AdditionalLeaveRequestController extends Controller
                 'leave_reason'      => $request->leave_reason,
                 'phone'             => $request->phone,
                 'leave_address'     => $request->leave_address,
-                'letter_number'     => 'CUTI-' . now()->format('Ymd') . '-' . strtoupper(Str::random(5)),
+                'letter_number'     => 'TEMP-' . uniqid(),
                 'status'            => $status,
             ]);
 
@@ -274,12 +310,19 @@ class AdditionalLeaveRequestController extends Controller
 
     public function print(AdditionalLeaveRequest $additionalLeaveRequest)
     {
+        if (
+            auth()->user()->role === 'pegawai' &&
+            $additionalLeaveRequest->employee_id !== auth()->user()->employee->id
+        ) {
+            abort(403);
+        }
+
         $additionalLeaveRequest->load([
             'periods',
             'employee.additionalLeaves' => function ($q) {
                 $q->where('year', date('Y'));
             },
-            'workUnit.employee' // pimpinan unit
+            'workUnit.employee'
         ]);
 
         $additionalLeave = $additionalLeaveRequest
@@ -287,7 +330,6 @@ class AdditionalLeaveRequestController extends Controller
             ->additionalLeaves
             ->first();
 
-        // 🔑 Ambil Kepala Kantor (HEAD OFFICE)
         $headOffice = User::where('role', 'head_office')
             ->whereHas('employee')
             ->with('employee')
@@ -296,14 +338,14 @@ class AdditionalLeaveRequestController extends Controller
         $pdf = Pdf::loadView(
             'additional_leave_requests.pdf',
             [
-                'request'         => $additionalLeaveRequest,
+                'request' => $additionalLeaveRequest,
                 'additionalLeave' => $additionalLeave,
-                'headOffice'     => $headOffice, // ⬅ kirim ke blade
+                'headOffice' => $headOffice,
             ]
         )->setPaper('A4', 'portrait');
 
-        return $pdf->stream(
-            'Pengajuan-Cuti-' . $additionalLeaveRequest->letter_number . '.pdf'
-        );
+        $fileName = 'Pengajuan-Cuti-' . preg_replace('/[\/\\\\]/', '-', $additionalLeaveRequest->letter_number) . '.pdf';
+
+        return $pdf->stream($fileName);
     }
 }

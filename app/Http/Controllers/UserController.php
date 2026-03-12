@@ -51,7 +51,7 @@ class UserController extends Controller
         $request->validate([
             'employee_id' => 'required|exists:employees,id|unique:users,employee_id,' . $user->id,
             'password'    => 'nullable|min:6|confirmed',
-            'role'        => 'required|in:admin,pegawai',
+            'role'        => 'required',
         ]);
 
         $data = [

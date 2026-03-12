@@ -17,6 +17,7 @@ use App\Http\Controllers\ReminderLogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AgencyController;
 use App\Http\Controllers\AttendaceController;
+use App\Http\Controllers\GeneralAffairsLeaveController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\WorkShiftController;
 use App\Http\Controllers\WorkUnitController;
@@ -43,6 +44,17 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', [LandingController::class, 'landing'])->name('landing');
+Route::post(
+    '/general-affairs/leave/{id}/approve',
+    [GeneralAffairsLeaveController::class, 'approve']
+)
+    ->name('leave.general.approve');
+
+Route::post(
+    '/general-affairs/leave/{id}/reject',
+    [GeneralAffairsLeaveController::class, 'reject']
+)
+    ->name('leave.general.reject');
 
 Route::get('/attendances/export/csv', [AttendaceController::class, 'exportCsv'])
     ->name('attendances.export.csv');
@@ -113,6 +125,7 @@ Route::middleware(['auth', 'ChekRole:head_office'])->group(function () {
 
 Route::middleware('auth', 'ChekRole:superadmin,unit_head,head_office,pegawai')->group(function () {
     /*Additional Leave Request Routes*/
+    Route::get('additional-leave-requests/{additionalLeaveRequest}/print', [AdditionalLeaveRequestController::class, 'print'])->name('additional-leave-requests.print');
     Route::get(
         '/additional-leave-requests',
         [AdditionalLeaveRequestController::class, 'index']

@@ -92,21 +92,61 @@
                     <div class="col-md-8">
                         @switch($additionalLeaveRequest->status)
                             @case('pending_unit_head')
-                                <span class="badge badge-warning">Menunggu Pimpinan Unit</span>
+                                <span class="badge bg-warning text-dark">
+                                    Menunggu Atasan Langsung
+                                </span>
                             @break
 
                             @case('approved_unit_head')
-                                <span class="badge badge-info">Disetujui Pimpinan Unit</span>
+                                <span class="badge bg-info">
+                                    Disetujui Pimpinan Unit
+                                </span>
+                            @break
+
+                            @case('pending_head_office')
+                                <span class="badge bg-primary">
+                                    Menunggu Kepala Kantor
+                                </span>
+                            @break
+
+                            @case('approved_head_office')
+                                <span class="badge bg-secondary">
+                                    Disetujui Kepala Kantor
+                                </span>
+                            @break
+
+                            @case('pending_general_affairs')
+                                <span class="badge bg-dark">
+                                    Menunggu Penetapan Sub Bagian Umum
+                                </span>
+                            @break
+
+                            @case('approved_general_affairs')
+                                <span class="badge bg-success">
+                                    Ditetapkan Kasubag Umum
+                                </span>
                             @break
 
                             @case('approved')
-                                <span class="badge badge-success">Disetujui Kepala Kantor</span>
+                                <span class="badge bg-success">
+                                    Disetujui
+                                </span>
                             @break
 
                             @case('rejected')
                             @case('rejected_unit_head')
-                                <span class="badge badge-danger">Ditolak</span>
+
+                            @case('rejected_head_office')
+                            @case('rejected_general_affairs')
+                                <span class="badge bg-danger">
+                                    Ditolak
+                                </span>
                             @break
+
+                            @default
+                                <span class="badge bg-light text-dark">
+                                    Status Tidak Diketahui
+                                </span>
                         @endswitch
                     </div>
                 </div>

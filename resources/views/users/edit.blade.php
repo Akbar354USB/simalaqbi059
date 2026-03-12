@@ -25,7 +25,21 @@
                         <label>Role</label>
                         <select name="role" class="form-control">
                             <option value="pegawai" {{ $user->role === 'pegawai' ? 'selected' : '' }}>Pegawai</option>
-                            <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="superadmin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                            <option value="ppnpn" {{ $user->role === 'ppnpn' ? 'selected' : '' }}>PPNPN</option>
+                            <option value="resepsionis" {{ $user->role === 'resepsionis' ? 'selected' : '' }}>Resepsionis
+                            </option>
+                            <option value="unit_head" {{ $user->role === 'unit_head' ? 'selected' : '' }}>Kepala Seksi /
+                                Kasubag</option>
+                            <option value="head_office" {{ $user->role === 'head_office' ? 'selected' : '' }}>Kepala Kantor
+                            </option>
+
+                            {{-- <option value="superadmin">admin</option>
+                            <option value="pegawai">pegawai</option>
+                            <option value="ppnpn">ppnpn</option>
+                            <option value="resepsionis">resepsionis</option>
+                            <option value="unit_head">Pimpinan Unit/Seksi</option>
+                            <option value="head_office">Kepala Kantor</option> --}}
                         </select>
                     </div>
 

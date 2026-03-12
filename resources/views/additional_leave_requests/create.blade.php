@@ -24,11 +24,20 @@
                         <label>Jabatan</label>
                         <input type="text" name="position" class="form-control" value="{{ old('position') }}" required>
                     </div>
-
                     <div class="form-group">
                         <label>Masa Kerja</label>
-                        <input type="text" name="length_of_service" class="form-control"
-                            value="{{ old('length_of_service') }}" required>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="number" name="years" class="form-control" min="0" style="width:120px"
+                                required>
+                            <span>Tahun</span>
+
+                            <input type="number" name="months" class="form-control" min="0" max="11"
+                                style="width:120px" required>
+                            <span>Bulan</span>
+                        </div>
+
+                        <input type="hidden" name="length_of_service" id="length_of_service">
                     </div>
 
                     <div class="form-group">
@@ -92,6 +101,17 @@
 
 
 @section('js')
+    <script>
+        document.querySelector('[name="years"]').addEventListener('input', updateService);
+        document.querySelector('[name="months"]').addEventListener('input', updateService);
+
+        function updateService() {
+            let years = document.querySelector('[name="years"]').value || 0;
+            let months = document.querySelector('[name="months"]').value || 0;
+
+            document.getElementById('length_of_service').value = years + ' tahun ' + months + ' bulan';
+        }
+    </script>
     <script>
         let periodIndex = 1;
         let maxPeriod = 2;

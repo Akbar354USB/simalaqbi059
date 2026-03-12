@@ -39,7 +39,7 @@
                                     {{-- WAKTU CUTI --}}
                                     <td class="text-left">
                                         @foreach ($item->periods as $period)
-                                            <span class="badge badge-success d-block mb-1">
+                                            <span class="badge bg-success d-block mb-1">
                                                 {{ \Carbon\Carbon::parse($period->start_date)->format('d M Y') }}
                                                 –
                                                 {{ \Carbon\Carbon::parse($period->end_date)->format('d M Y') }}
@@ -58,35 +58,61 @@
                                     <td>
                                         @switch($item->status)
                                             @case('pending_unit_head')
-                                                <span class="badge badge-warning">
-                                                    Menunggu Pimpinan Unit
+                                                <span class="badge bg-warning text-dark">
+                                                    Menunggu Atasan Langsung
                                                 </span>
                                             @break
 
                                             @case('approved_unit_head')
-                                                <span class="badge badge-info">
+                                                <span class="badge bg-info">
                                                     Disetujui Pimpinan Unit
                                                 </span>
                                             @break
 
                                             @case('pending_head_office')
-                                                <span class="badge badge-primary">
+                                                <span class="badge bg-primary">
                                                     Menunggu Kepala Kantor
                                                 </span>
                                             @break
 
+                                            @case('approved_head_office')
+                                                <span class="badge bg-secondary">
+                                                    Disetujui Kepala Kantor
+                                                </span>
+                                            @break
+
+                                            @case('pending_general_affairs')
+                                                <span class="badge bg-dark">
+                                                    Menunggu Penetapan Sub Bagian Umum
+                                                </span>
+                                            @break
+
+                                            @case('approved_general_affairs')
+                                                <span class="badge bg-success">
+                                                    Disetujui Sub Bagian Umum
+                                                </span>
+                                            @break
+
                                             @case('approved')
-                                                <span class="badge badge-success">
+                                                <span class="badge bg-success">
                                                     Disetujui
                                                 </span>
                                             @break
 
                                             @case('rejected')
                                             @case('rejected_unit_head')
-                                                <span class="badge badge-danger">
+
+                                            @case('rejected_head_office')
+                                            @case('rejected_general_affairs')
+                                                <span class="badge bg-danger">
                                                     Ditolak
                                                 </span>
                                             @break
+
+                                            @default
+                                                <span class="badge bg-light text-dark">
+                                                    Status Tidak Diketahui
+                                                </span>
                                         @endswitch
                                     </td>
 
@@ -101,9 +127,11 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
 
-                                        @if ($item->status === 'approved')
+                                        @if (
+                                            $item->status === 'approved_general_affairs' &&
+                                                (auth()->user()->role === 'superadmin' || $item->employee_id === auth()->user()->employee->id))
                                             <a href="{{ route('additional-leave-requests.print', $item->id) }}"
-                                                target="_blank" class="btn btn-secondary btn-sm" title="Cetak">
+                                                target="_blank" class="btn btn-danger btn-sm" title="Cetak">
                                                 <i class="fas fa-file-pdf"></i>
                                             </a>
                                         @endif

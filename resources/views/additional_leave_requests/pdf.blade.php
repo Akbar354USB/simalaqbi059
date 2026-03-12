@@ -130,7 +130,7 @@
                 Yth. Kepala KPPN Majene
             </td>
             <td class="text-right">
-                Majene, {{ now()->locale('id')->translatedFormat('d F Y') }}
+                Majene, {{ \Carbon\Carbon::parse($request->created_at)->locale('id')->translatedFormat('d F Y') }}
             </td>
         </tr>
     </table>
@@ -248,7 +248,7 @@
         <tr>
             <td style="vertical-align: top;">{{ $request->leave_address }}</td>
             <td colspan="2" style="padding-left: 20px">Hormat Saya,
-                <br><br><br><br><br><br>
+                <br><br><br><br><br><br><br>
                 <span style="color: #777; font-size: 12px;">
                     Ditandatangani secara elektronik
                 </span><br>
@@ -262,7 +262,11 @@
     <br>
 
     @php
-        $approvedByUnitHead = in_array($request->status, ['approved_unit_head', 'approved', 'pending_head_office']);
+        $approvedByUnitHead = in_array($request->status, [
+            'approved_unit_head',
+            'approved_general_affairs',
+            'pending_head_office',
+        ]);
 
         $rejectedByUnitHead = in_array($request->status, ['rejected_unit_head']);
 
@@ -310,18 +314,18 @@
                     Kepala Kantor Pelayanan <br>
                     Perbendaharaan Negara Tipe A2 <br>
                     Majene,
-                    <br><br><br><br><br><br>
+                    <br><br><br><br><br><br><br>
 
                     <span style="color: #777; font-size: 12px;">
                         Ditandatangani secara elektronik
                     </span><br>
 
-                    Mohammad Taufiq Hidayanto <br>
-                    NIP. 197603261996031004
+                    {{ $headOffice->employee->employee_name ?? '-' }} <br>
+                    NIP. {{ $headOffice->employee->nip ?? '-' }}
                 @else
                     {{-- JIKA PENGAJU = PEGAWAI --}}
                     Kepala {{ $request->workUnit->work_unit ?? '-' }}
-                    <br><br><br><br><br><br>
+                    <br><br><br><br><br><br><br>
 
                     <span style="color: #777; font-size: 12px;">
                         Ditandatangani secara elektronik
@@ -360,7 +364,7 @@
         <tr>
             {{-- DISETUJUI --}}
             <td class="text-center">
-                @if ($request->status === 'approved')
+                @if ($request->status === 'approved_general_affairs')
                     <img src="{{ public_path('backend/check.png') }}" width="12">
                 @endif
             </td>
@@ -387,7 +391,7 @@
                 Kepala Kantor Pelayanan <br>
                 Perbendaharaan Negara Tipe A2 <br>
                 Majene,
-                <br><br><br><br><br><br>
+                <br><br><br><br><br><br><br>
 
                 <span style="color: #777; font-size: 12px;">
                     Ditandatangani secara elektronik

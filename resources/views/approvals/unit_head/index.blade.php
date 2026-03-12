@@ -24,14 +24,14 @@
                         </thead>
 
                         <tbody>
-                            @forelse ($requests as $item)
+                            @forelse ($unitHeadRequests as $item)
                                 <tr class="text-center">
                                     <td>{{ $item->employee->employee_name }}</td>
                                     <td>{{ $item->employee->nip ?? '-' }}</td>
 
                                     <td class="text-left">
                                         @foreach ($item->periods as $period)
-                                            <span class="badge badge-success d-block mb-1">
+                                            <span class="badge bg-success d-block mb-1">
                                                 {{ \Carbon\Carbon::parse($period->start_date)->format('d M Y') }}
                                                 –
                                                 {{ \Carbon\Carbon::parse($period->end_date)->format('d M Y') }}
@@ -89,6 +89,97 @@
                 </div>
             </div>
         </div>
+
+        @if ($isGeneralAffairs)
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle"></i>
+                        Penetapan Pengajuan Cuti (Kasubag Umum)
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="text-center table-light">
+                                <tr>
+                                    <th>Nama</th>
+                                    <th>NIP</th>
+                                    <th>Waktu Cuti</th>
+                                    <th>Total Hari</th>
+                                    <th width="150">Aksi</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @forelse ($generalAffairsRequests as $item)
+                                    <tr class="text-center">
+                                        <td>{{ $item->employee->employee_name }}</td>
+                                        <td>{{ $item->employee->nip ?? '-' }}</td>
+
+                                        <td class="text-left">
+                                            @foreach ($item->periods as $period)
+                                                <span class="badge bg-success d-block mb-1">
+                                                    {{ \Carbon\Carbon::parse($period->start_date)->format('d M Y') }}
+                                                    –
+                                                    {{ \Carbon\Carbon::parse($period->end_date)->format('d M Y') }}
+                                                </span>
+                                            @endforeach
+                                        </td>
+
+                                        <td>
+                                            {{ $item->periods->sum('total_days') }} hari
+                                        </td>
+
+                                        <td>
+
+                                            <button type="button" class="btn btn-success btn-sm btn-approve"
+                                                data-id="{{ $item->id }}">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+
+                                            <button type="button" class="btn btn-danger btn-sm btn-reject"
+                                                data-id="{{ $item->id }}">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+
+                                            <a href="{{ route('additional-leave-requests.show', $item->id) }}"
+                                                class="btn btn-info btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+
+                                            {{-- APPROVE --}}
+                                            <form id="approve-form-{{ $item->id }}"
+                                                action="{{ route('leave.general.approve', $item->id) }}" method="POST"
+                                                class="d-none">
+                                                @csrf
+                                            </form>
+
+                                            {{-- REJECT --}}
+                                            <form id="reject-form-{{ $item->id }}"
+                                                action="{{ route('leave.general.reject', $item->id) }}" method="POST"
+                                                class="d-none">
+                                                @csrf
+                                            </form>
+
+                                        </td>
+                                    </tr>
+
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">
+                                            Tidak ada pengajuan menunggu penetapan
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 @endsection
 

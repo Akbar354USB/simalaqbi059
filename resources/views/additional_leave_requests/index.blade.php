@@ -15,45 +15,66 @@
                 </a>
 
                 {{-- FILTER --}}
-                <div class="card border mb-4">
-                    <div class="card-body p-3">
+                <div class="card border mb-4 shadow-sm">
+                    <div class="card-body py-3">
+
                         <form method="GET" action="{{ route('additional-leave-requests.index') }}">
-                            <div class="form-row align-items-end">
+
+                            <div class="row g-2 align-items-end">
+
+                                {{-- SEARCH --}}
                                 <div class="col-md-4">
-                                    <label class="small font-weight-bold">
-                                        <i class="fas fa-search"></i> Kata Kunci
+                                    <label class="form-label small fw-semibold">
+                                        <i class="fas fa-search me-1"></i> Pencarian
                                     </label>
+
                                     <input type="text" name="keyword" class="form-control"
                                         value="{{ request('keyword') }}" placeholder="Nama / NIP / No Surat">
                                 </div>
 
+                                {{-- START DATE --}}
                                 <div class="col-md-3">
-                                    <label class="small font-weight-bold">
-                                        <i class="fas fa-calendar"></i> Tanggal Mulai
+                                    <label class="form-label small fw-semibold">
+                                        <i class="fas fa-calendar me-1"></i> Tanggal Mulai
                                     </label>
+
                                     <input type="date" name="start_date" class="form-control"
                                         value="{{ request('start_date') }}">
                                 </div>
 
+                                {{-- END DATE --}}
                                 <div class="col-md-3">
-                                    <label class="small font-weight-bold">
-                                        <i class="fas fa-calendar-check"></i> Tanggal Selesai
+                                    <label class="form-label small fw-semibold">
+                                        <i class="fas fa-calendar-check me-1"></i> Tanggal Selesai
                                     </label>
+
                                     <input type="date" name="end_date" class="form-control"
                                         value="{{ request('end_date') }}">
                                 </div>
 
-                                <div class="col-md-2 d-flex">
-                                    <button class="btn btn-primary w-100 mr-1">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    <a href="{{ route('additional-leave-requests.index') }}"
-                                        class="btn btn-outline-secondary w-100">
-                                        <i class="fas fa-sync"></i>
-                                    </a>
+                                {{-- BUTTON --}}
+                                <div class="col-md-2">
+
+                                    <div class="d-flex gap-2">
+
+                                        <button class="btn btn-primary w-100">
+                                            <i class="fas fa-search me-1"></i>
+                                            Cari
+                                        </button>
+
+                                        <a href="{{ route('additional-leave-requests.index') }}"
+                                            class="btn btn-light border w-100">
+                                            <i class="ti ti-refresh me-1"></i>
+                                        </a>
+
+                                    </div>
+
                                 </div>
+
                             </div>
+
                         </form>
+
                     </div>
                 </div>
 
@@ -78,7 +99,7 @@
 
                                     <td>
                                         @foreach ($item->periods as $period)
-                                            <span class="badge badge-success d-block mb-1">
+                                            <span class="badge bg-success d-block mb-1">
                                                 {{ \Carbon\Carbon::parse($period->start_date)->format('d M Y') }}
                                                 –
                                                 {{ \Carbon\Carbon::parse($period->end_date)->format('d M Y') }}
@@ -92,33 +113,76 @@
                                     <td>
                                         @switch($item->status)
                                             @case('pending_unit_head')
-                                                <span class="badge badge-warning">Menunggu Pimpinan Unit</span>
+                                                <span class="badge bg-warning text-dark">
+                                                    Menunggu Atasan Langsung
+                                                </span>
                                             @break
 
                                             @case('approved_unit_head')
-                                                <span class="badge badge-info">Disetujui Pimpinan Unit</span>
+                                                <span class="badge bg-info">
+                                                    Disetujui Pimpinan Unit
+                                                </span>
+                                            @break
+
+                                            @case('pending_head_office')
+                                                <span class="badge bg-primary">
+                                                    Menunggu Kepala Kantor
+                                                </span>
+                                            @break
+
+                                            @case('approved_head_office')
+                                                <span class="badge bg-secondary">
+                                                    Disetujui Kepala Kantor
+                                                </span>
+                                            @break
+
+                                            @case('pending_general_affairs')
+                                                <span class="badge bg-dark">
+                                                    Menunggu Penetapan Sub Bagian Umum
+                                                </span>
+                                            @break
+
+                                            @case('approved_general_affairs')
+                                                <span class="badge bg-success">
+                                                    Ditetapkan Kasubag Umum
+                                                </span>
                                             @break
 
                                             @case('approved')
-                                                <span class="badge badge-success">Disetujui</span>
+                                                <span class="badge bg-success">
+                                                    Disetujui
+                                                </span>
                                             @break
 
                                             @case('rejected')
                                             @case('rejected_unit_head')
-                                                <span class="badge badge-danger">Ditolak</span>
+
+                                            @case('rejected_head_office')
+                                            @case('rejected_general_affairs')
+                                                <span class="badge bg-danger">
+                                                    Ditolak
+                                                </span>
                                             @break
+
+                                            @default
+                                                <span class="badge bg-light text-dark">
+                                                    Status Tidak Diketahui
+                                                </span>
                                         @endswitch
                                     </td>
 
                                     <td>
+                                        {{-- Tombol cetak hanya jika sudah disetujui Subbag Umum --}}
+                                        @if ($item->status === 'approved_general_affairs')
+                                            <a href="{{ route('additional-leave-requests.print', $item->id) }}"
+                                                target="_blank" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </a>
+                                        @endif
+
                                         <a href="{{ route('additional-leave-requests.show', $item->id) }}"
                                             class="btn btn-info btn-sm">
                                             <i class="fas fa-eye"></i>
-                                        </a>
-
-                                        <a href="{{ route('additional-leave-requests.print', $item->id) }}" target="_blank"
-                                            class="btn btn-secondary btn-sm">
-                                            <i class="fas fa-file-pdf"></i>
                                         </a>
 
                                         {{-- 🔥 TOMBOL HAPUS SELALU TAMPIL --}}
