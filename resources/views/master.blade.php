@@ -112,6 +112,16 @@
         }
     </script>
     @yield('js')
+    <script>
+        setInterval(function() {
+            fetch("{{ route('refresh.session') }}")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Session diperbarui");
+                })
+                .catch(error => console.log("Session refresh gagal"));
+        }, 300000); // 5 menit
+    </script>
 </body>
 <!-- [Body] end -->
 

@@ -44,6 +44,9 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', [LandingController::class, 'landing'])->name('landing');
+Route::get('/refresh-session', function () {
+    return response()->json(['status' => 'ok']);
+})->name('refresh.session');
 Route::post(
     '/general-affairs/leave/{id}/approve',
     [GeneralAffairsLeaveController::class, 'approve']

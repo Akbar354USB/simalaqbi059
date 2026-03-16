@@ -101,6 +101,18 @@
     </div>
     <!-- [ Main Content ] end -->
     <!-- Required Js -->
+    <!-- jQuery (WAJIB PALING ATAS) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Session Expired',
+                text: "{{ session('error') }}"
+            });
+        </script>
+    @endif
     <script src="{{ asset('backend/mantis/assets/js/plugins/popper.min.js') }}"></script>
     <script src="{{ asset('backend/mantis/assets/js/plugins/simplebar.min.js') }}"></script>
     <script src="{{ asset('backend/mantis/assets/js/plugins/bootstrap.min.js') }}"></script>

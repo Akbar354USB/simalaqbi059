@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Illuminate\Session\TokenMismatchException;
 
 class Handler extends ExceptionHandler
 {
@@ -43,6 +44,19 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // Redirect jika session habis (Error 419)
+        $this->renderable(function (TokenMismatchException $e, $request) {
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Session expired'
+                ], 419);
+            }
+
+            return redirect()->route('login')
+                ->with('error', 'Sesi anda telah habis, silahkan login kembali.');
         });
     }
 }
