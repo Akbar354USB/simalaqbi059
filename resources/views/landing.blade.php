@@ -11,6 +11,60 @@
     <link rel="stylesheet" href="{{ asset('backend/landing/css/icomoon.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/landing/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/landing/css/custom.css') }}">
+    <style>
+        /* tombol kanan atas */
+
+        .hero-policy-top {
+            position: absolute;
+            top: 25px;
+            right: 40px;
+            z-index: 20;
+        }
+
+        /* style tombol */
+
+        .btn-privacy {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            backdrop-filter: blur(6px);
+            transition: all .25s ease;
+        }
+
+        /* icon */
+
+        .btn-privacy i {
+            margin-right: 6px;
+        }
+
+        /* hover */
+
+        .btn-privacy:hover {
+            background: white;
+            color: #0d6efd;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* mobile */
+
+        @media(max-width:768px) {
+
+            .hero-policy-top {
+                right: 15px;
+                top: 15px;
+            }
+
+            .btn-privacy {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+        }
+    </style>
 </head>
 
 <body>
@@ -20,6 +74,12 @@
         style="background-image: url('https://simalaqbi059.id/backend/landing/backgroundlanding.png'); background-attachment:fixed;">
         <div class="hero-logo-top">
             <img src="https://simalaqbi059.id/backend/simalaqbi.png" alt="Logo SIMALAQBI">
+        </div>
+        <div class="hero-policy-top">
+            <a href="{{ route('privacy-policy') }}" class="btn btn-privacy">
+                <i class="bi bi-shield-lock"></i>
+                Kebijakan Privasi
+            </a>
         </div>
         <div class="overlay"></div>
         <div class="container">

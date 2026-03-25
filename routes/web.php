@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', [LandingController::class, 'landing'])->name('landing');
+Route::get('/kebijakan-privasi-hadir059kuReminder', [LandingController::class, 'privacypolicy'])->name('privacy-policy');
 Route::get('/refresh-session', function () {
     return response()->json(['status' => 'ok']);
 })->name('refresh.session');

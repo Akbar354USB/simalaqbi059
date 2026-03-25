@@ -19,4 +19,9 @@ class LandingController extends Controller
 
         return view('landing',  compact('categories', 'images'));
     }
+
+    public function privacypolicy()
+    {
+        return view('privacy_policy');
+    }
 }
