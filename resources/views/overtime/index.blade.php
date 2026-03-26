@@ -22,13 +22,17 @@
             <tbody>
                 @foreach ($overtimes as $key => $overtime)
                     <tr>
-                        <td>{{ $key + 1 }}</td>
+                        <td>{{ $loop->iteration + $overtimes->firstItem() - 1 }}</td>
                         <td>{{ $overtime->employee->employee_name }}</td>
                         <td>{{ $overtime->overtime_date->format('d-m-Y') }}</td>
                         <td>{{ $overtime->start_time }} - {{ $overtime->end_time }}</td>
                         <td>{{ $overtime->total_hours }} Jam</td>
                         <td>
-                            <img src="{{ $overtime->photo_url }}" width="70">
+                            <a href="{{ asset('storage' . $overtime->photo_url) }}?t={{ time() }}" target="_blank">
+                                <img src="{{ asset('storage' . $overtime->photo_url) }}?t={{ time() }}"
+                                    class="img-thumbnail" style="width:60px; height:60px; object-fit:cover;"
+                                    title="foto lembur">
+                            </a>
                         </td>
                         <td>
                             <span
@@ -74,6 +78,17 @@
                 @endforeach
             </tbody>
         </table>
+
+        {{-- PAGINATION --}}
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted">
+                Menampilkan {{ $overtimes->firstItem() }} – {{ $overtimes->lastItem() }}
+                dari {{ $overtimes->total() }} data
+            </div>
+            <div>
+                {{ $overtimes->appends(request()->query())->links() }}
+            </div>
+        </div>
 
     </div>
 @endsection

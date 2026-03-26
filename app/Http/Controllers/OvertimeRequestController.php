@@ -53,11 +53,11 @@ class OvertimeRequestController extends Controller
         $isApprover = $isSubBagUmumApprover || $isSuperAdmin;
 
         if ($isApprover) {
-            $overtimes = OvertimeRequest::latest()->get();
+            $overtimes = OvertimeRequest::latest()->paginate(10);
         } else {
             $overtimes = OvertimeRequest::where('employee_id', $employee->id)
                 ->latest()
-                ->get();
+                ->paginate(10);
         }
 
         return view('overtime.index', compact('overtimes', 'isApprover'));
