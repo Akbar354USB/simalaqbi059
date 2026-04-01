@@ -17,10 +17,8 @@
                     melakukan
                     Konfirmasi Absensi.
                 </div>
-                <!--<div id="clock" class="mb-2 text-primary fw-bold text-center"></div>-->
                 <div id="clock" class="bg-light-primary mb-2 text-primary fw-bold text-center fs-2"></div>
 
-                <!--$isCheckIn = $attendanceToday && $attendanceToday->check_in_time;-->
                 @php
                     $isCheckIn = !is_null($attendanceToday);
                 @endphp

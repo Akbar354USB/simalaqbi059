@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('overtime_request_id')
-                ->constrained()
+                ->constrained('overtime_request_v2_s') // 🔥 INI YANG BENAR
                 ->onDelete('cascade');
 
             $table->foreignId('approved_by')

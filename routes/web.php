@@ -25,7 +25,9 @@ use App\Http\Controllers\OvertimeRequestController;
 use App\Http\Controllers\HeadOfficeApprovalController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\UnitHeadApprovalController;
+use App\Http\Controllers\OvertimeRequestV2Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +46,36 @@ use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/', [LandingController::class, 'landing'])->name('landing');
+
+Route::post('/lokasi', function (Request $request) {
+    $lat = $request->lat;
+    $lon = $request->lon;
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Lokasi berhasil diterima',
+        'latitude' => $lat,
+        'longitude' => $lon
+    ]);
+});
+
+Route::get('/overtime_v2', [OvertimeRequestV2Controller::class, 'index'])->name('overtime_v2.index');
+Route::get('/overtime_v2/create', [OvertimeRequestV2Controller::class, 'create'])->name('overtime_v2.create');
+Route::post('/overtime_v2', [OvertimeRequestV2Controller::class, 'store'])->name('overtime_v2.store');
+Route::get('/overtime_v2/{id}/edit', [OvertimeRequestV2Controller::class, 'edit'])->name('overtime_v2.edit');
+Route::put('/overtime_v2/{id}', [OvertimeRequestV2Controller::class, 'update'])->name('overtime_v2.update');
+Route::patch('/overtime_v2/{id}', [OvertimeRequestV2Controller::class, 'update']);
+Route::delete('/overtime_v2/{id}', [OvertimeRequestV2Controller::class, 'destroy'])->name('overtime_v2.destroy');
+Route::get('/overtime_v2/export/csv', [OvertimeRequestV2Controller::class, 'exportCsv'])
+    ->name('overtime_v2.export.csv');
+Route::get('/overtime_v2/export/pdf', [OvertimeRequestV2Controller::class, 'exportPdf'])
+    ->name('overtime_v2.export.pdf');
+Route::post('/overtime/{id}/approve', [OvertimeRequestV2Controller::class, 'approve'])->name('overtime.approve');
+Route::post('/overtime/{id}/reject', [OvertimeRequestV2Controller::class, 'reject'])->name('overtime.reject');
+
+
+
+
 Route::get('/kebijakan-privasi-hadir059kuReminder', [LandingController::class, 'privacypolicy'])->name('privacy-policy');
 Route::get('/refresh-session', function () {
     return response()->json(['status' => 'ok']);
@@ -70,8 +102,8 @@ Route::post('/overtime', [OvertimeRequestController::class, 'store'])->name('ove
 Route::get('/overtime/{id}/edit', [OvertimeRequestController::class, 'edit'])->name('overtime.edit');
 Route::put('/overtime/{id}', [OvertimeRequestController::class, 'update'])->name('overtime.update');
 Route::delete('/overtime/{id}', [OvertimeRequestController::class, 'destroy'])->name('overtime.destroy');
-Route::post('/overtime/{id}/approve', [OvertimeRequestController::class, 'approve'])->name('overtime.approve');
-Route::post('/overtime/{id}/reject', [OvertimeRequestController::class, 'reject'])->name('overtime.reject');
+// Route::post('/overtime/{id}/approve', [OvertimeRequestController::class, 'approve'])->name('overtime.approve');
+// Route::post('/overtime/{id}/reject', [OvertimeRequestController::class, 'reject'])->name('overtime.reject');
 
 Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])
     ->middleware('auth')

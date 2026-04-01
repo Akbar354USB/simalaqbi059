@@ -1,4 +1,4 @@
-@extends('master')
+{{-- @extends('master')
 
 @section('content')
     <div class="container-fluid">
@@ -192,4 +192,38 @@
             alert('Reminder absensi aktif');
         }
     </script>
-@endsection
+@endsection --}}
+
+<button onclick="getLokasi()">Ambil Lokasi GPS</button>
+
+<pre id="hasil"></pre>
+
+<script>
+    function getLokasi() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                fetch('/lokasi', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('hasil').innerText = JSON.stringify(data, null, 2);
+                    });
+
+            }, function(error) {
+                alert("Gagal mengambil lokasi: " + error.message);
+            });
+        } else {
+            alert("Browser tidak mendukung GPS");
+        }
+    }
+</script>

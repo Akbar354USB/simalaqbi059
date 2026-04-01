@@ -70,7 +70,7 @@ class Employee extends Model
     // Relasi ke pengajuan lembur
     public function overtimeRequests()
     {
-        return $this->hasMany(OvertimeRequest::class);
+        return $this->hasMany(OvertimeRequestV2::class);
     }
 
     // Relasi sebagai approver (pimpinan Sub Bagian Umum)

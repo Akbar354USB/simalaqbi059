@@ -30,7 +30,7 @@ class OvertimeApproval extends Model
     // Relasi ke pengajuan lembur
     public function overtimeRequest()
     {
-        return $this->belongsTo(OvertimeRequest::class);
+        return $this->belongsTo(OvertimeRequestV2::class);
     }
 
     // Relasi ke pegawai yang menyetujui (pimpinan Sub Bagian Umum)
