@@ -15,38 +15,6 @@ use Illuminate\Validation\ValidationException;
 
 class OvertimeRequestV2Controller extends Controller
 {
-    /**
-     * Tampilkan semua data
-     */
-    // public function index(Request $request)
-    // {
-    //     $query = OvertimeRequestV2::with('employee')->latest();
-
-    //     // 🔍 Filter Nama (berdasarkan employee_id)
-    //     if ($request->nama) {
-    //         $query->where('employee_id', $request->nama);
-    //     }
-
-    //     // Filter Tanggal
-    //     if ($request->tanggal) {
-    //         $query->whereDate('overtime_date', $request->tanggal);
-    //     }
-
-    //     // Filter Status
-    //     if ($request->status) {
-    //         $query->where('status', $request->status);
-    //     }
-
-    //     $overtimes = $query->paginate(10);
-    //     $overtimes->appends($request->all());
-
-    //     // 🔥 Ambil pegawai status PPNPN
-    //     $employees = Employee::where('status', 'PPNPN')->orderBy('employee_name')->get();
-
-    //     return view('overtime_v2.index', compact('overtimes', 'employees'));
-    // }
-
-
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -114,6 +82,108 @@ class OvertimeRequestV2Controller extends Controller
         return view('overtime_v2.create', compact('overtimeToday', 'employees'));
     }
 
+    // public function store(Request $request)
+    // {
+    //     $user = auth()->user();
+    //     $employeeId = $user->employee_id;
+
+    //     // ================= CEK DATA HARI INI =================
+    //     $overtimeDate = now()->toDateString();
+    //     $overtime = OvertimeRequestV2::where('employee_id', $employeeId)
+    //         ->where('overtime_date', $overtimeDate)
+    //         ->first();
+
+    //     try {
+
+    //         if (!$overtime) {
+    //             // ✅ CHECK-IN → purpose wajib
+    //             $request->validate([
+    //                 'latitude' => 'required',
+    //                 'longitude' => 'required',
+    //                 'photo' => 'required|image',
+    //                 'purpose' => 'required|string'
+    //             ]);
+    //         } else {
+    //             // ✅ CHECK-OUT → purpose tidak wajib
+    //             $request->validate([
+    //                 'latitude' => 'required',
+    //                 'longitude' => 'required',
+    //                 'photo' => 'required|image',
+    //             ]);
+    //         }
+    //     } catch (ValidationException $e) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => $e->getMessage(),
+    //             'errors' => $e->errors()
+    //         ], 422);
+    //     }
+
+    //     // ================= VALIDASI LOKASI =================
+    //     $office = OfficeLocation::first();
+
+    //     if (!$office) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Lokasi kantor belum diset'
+    //         ]);
+    //     }
+
+    //     $distance = GeoService::distanceMeter(
+    //         $request->latitude,
+    //         $request->longitude,
+    //         $office->latitude,
+    //         $office->longitude
+    //     );
+
+    //     if ($distance > $office->radius_meter) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Di luar radius kantor'
+    //         ]);
+    //     }
+
+    //     $photoPath = $request->file('photo')->store('overtime', 'public');
+
+    //     /* ================= CHECK IN ================= */
+    //     if (!$overtime) {
+
+    //         OvertimeRequestV2::create([
+    //             'employee_id' => $employeeId,
+    //             'overtime_date' => $request->overtime_date,
+    //             'check_in_photo' => $photoPath,
+    //             'purpose' => $request->purpose,
+    //             'status' => 'pending'
+    //         ]);
+
+    //         return response()->json([
+    //             'status' => true,
+    //             'message' => 'Check-in lembur berhasil'
+    //         ]);
+    //     }
+
+    //     /* ================= CHECK OUT ================= */
+    //     if ($overtime->check_out_photo) {
+    //         return response()->json([
+    //             'status' => false,
+    //             'message' => 'Sudah check-out lembur'
+    //         ]);
+    //     }
+
+    //     $checkInTime = $overtime->created_at;
+    //     $duration = now()->diffInMinutes($checkInTime);
+
+    //     $overtime->update([
+    //         'check_out_photo' => $photoPath,
+    //         'duration' => $duration
+    //     ]);
+
+    //     return response()->json([
+    //         'status' => true,
+    //         'message' => 'Check-out lembur berhasil'
+    //     ]);
+    // }
+
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -121,6 +191,7 @@ class OvertimeRequestV2Controller extends Controller
 
         // ================= CEK DATA HARI INI =================
         $overtimeDate = now()->toDateString();
+
         $overtime = OvertimeRequestV2::where('employee_id', $employeeId)
             ->where('overtime_date', $overtimeDate)
             ->first();
@@ -143,10 +214,10 @@ class OvertimeRequestV2Controller extends Controller
                     'photo' => 'required|image',
                 ]);
             }
-        } catch (ValidationException $e) {
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'status' => false,
-                'message' => $e->getMessage(),
+                'message' => 'Validasi gagal',
                 'errors' => $e->errors()
             ], 422);
         }
@@ -181,11 +252,12 @@ class OvertimeRequestV2Controller extends Controller
         if (!$overtime) {
 
             OvertimeRequestV2::create([
-                'employee_id' => $employeeId,
-                'overtime_date' => $request->overtime_date,
-                'check_in_photo' => $photoPath,
-                'purpose' => $request->purpose,
-                'status' => 'pending'
+                'employee_id'     => $employeeId,
+                'overtime_date'   => $overtimeDate, // gunakan hari ini
+                'check_in_photo'  => $photoPath,
+                'check_in_time'   => now(), // ✅ isi waktu check-in
+                'purpose'         => $request->purpose,
+                'status'          => 'pending'
             ]);
 
             return response()->json([
@@ -202,12 +274,24 @@ class OvertimeRequestV2Controller extends Controller
             ]);
         }
 
-        $checkInTime = $overtime->created_at;
-        $duration = now()->diffInMinutes($checkInTime);
+        // pastikan ada check-in
+        if (!$overtime->check_in_time) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data check-in tidak ditemukan'
+            ]);
+        }
+
+        $checkOutTime = now();
+
+        // hitung durasi dari check_in_time
+        $duration = \Carbon\Carbon::parse($overtime->check_in_time)
+            ->diffInMinutes($checkOutTime);
 
         $overtime->update([
             'check_out_photo' => $photoPath,
-            'duration' => $duration
+            'check_out_time'  => $checkOutTime, // ✅ isi waktu check-out
+            'duration'        => $duration
         ]);
 
         return response()->json([

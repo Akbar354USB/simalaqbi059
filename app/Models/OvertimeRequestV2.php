@@ -18,6 +18,8 @@ class OvertimeRequestV2 extends Model
         'overtime_date',
         'check_in_photo',
         'check_out_photo',
+        'check_in_time',
+        'check_out_time',
         'status',
         'purpose',
         'duration'

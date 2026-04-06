@@ -22,6 +22,8 @@ return new class extends Migration
 
             $table->string('check_in_photo')->nullable();
             $table->string('check_out_photo')->nullable();
+            $table->timestamp('check_in_time')->nullable();
+            $table->timestamp('check_out_time')->nullable();
 
             $table->enum('status', ['pending', 'approved', 'rejected'])
                 ->default('pending');
