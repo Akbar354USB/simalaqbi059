@@ -51,7 +51,8 @@
                         <div class="d-flex justify-content-between align-items-end mb-4">
                             <h3 class="mb-0"><b>Login</b></h3>
                         </div>
-                        <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
+                        <form id="login-form" method="POST" action="{{ route('login') }}" class="needs-validation"
+                            novalidate>
                             @csrf
 
                             <!-- Username -->
@@ -99,6 +100,28 @@
             </div>
         </div>
     </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay"
+        style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+">
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Tunggu Sebentar..</p>
+        </div>
+    </div>
+
+
     <!-- [ Main Content ] end -->
     <!-- Required Js -->
     <!-- jQuery (WAJIB PALING ATAS) -->
@@ -133,6 +156,18 @@
     </script>
     <script>
         font_change("Public-Sans");
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#login-form').on('submit', function() {
+
+                // Tampilkan loading
+                $('#loading-overlay').css('display', 'flex');
+
+                // Disable tombol agar tidak double klik
+                $(this).find('button[type="submit"]').prop('disabled', true);
+            });
+        });
     </script>
 </body>
 <!-- [Body] end -->
