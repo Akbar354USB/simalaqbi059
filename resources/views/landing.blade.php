@@ -7,7 +7,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('backend/landing/css/flaticon.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('backend/landing/css/flaticon.css') }}"> --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('backend/landing/css/icomoon.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/landing/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('backend/landing/css/custom.css') }}">
@@ -47,6 +48,11 @@
             color: #0d6efd;
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon i {
+            font-size: 35px;
+            color: #174ecc;
         }
 
         /* mobile */
@@ -99,6 +105,95 @@
             </div>
         </div>
     </div>
+
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-md-8 text-center">
+                    <h2 class="mb-3 font-weight-bold">Tentang SIMALAQBI 059</h2>
+                    <p>
+                        SIMALAQBI059 merupakan Sistem Informasi Monitoring Administrasi Layanan Terintegrasi
+                        yang dikembangkan untuk mendukung digitalisasi proses kerja di KPPN Majene.
+                        Aplikasi ini membantu meningkatkan efisiensi, transparansi, serta kemudahan
+                        dalam pengelolaan layanan administrasi dan monitoring kegiatan dalam satu wadah aplikasi.
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 d-flex align-self-stretch ftco-animate fadeInUp ftco-animated">
+                    <div class="media block-6 services p-3 py-4 d-block text-center">
+                        <div class="icon d-flex justify-content-center align-items-center mb-3">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="media-body px-3">
+                            <h3 class="heading">Absensi PPNPN</h3>
+                            <p>Mencatat kehadiran pegawai secara digital dan real-time, sehingga memudahkan monitoring
+                                kedisiplinan serta rekapitulasi data absensi secara otomatis.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-self-stretch ftco-animate fadeInUp ftco-animated">
+                    <div class="media block-6 services p-3 py-4 d-block text-center">
+                        <div class="icon d-flex justify-content-center align-items-center mb-3"><i
+                                class="fas fa-user-clock"></i></div>
+                        <div class="media-body px-3">
+                            <h3 class="heading">Pengajuan Lembur PPNPN</h3>
+                            <p>memungkinkan pegawai mengajukan lembur secara online yang kemudian dapat diverifikasi dan
+                                disetujui oleh atasan, sehingga proses menjadi lebih tertib dan terdokumentasi dengan
+                                baik.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-self-stretch ftco-animate fadeInUp ftco-animated">
+                    <div class="media block-6 services p-3 py-4 d-block text-center">
+                        <div class="icon d-flex justify-content-center align-items-center mb-3"><i
+                                class="fas fa-calendar-check"></i></div>
+                        <div class="media-body px-3">
+                            <h3 class="heading">Reminder Absensi</h3>
+                            <p>Terintegrasi dengan Google Kalender berfungsi memberikan pengingat otomatis kepada
+                                pegawai terkait jadwal absensi, sehingga membantu meningkatkan kedisiplinan dan
+                                mengurangi kelalaian.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-self-stretch ftco-animate fadeInUp ftco-animated">
+                    <div class="media block-6 services p-3 py-4 d-block text-center">
+                        <div class="icon d-flex justify-content-center align-items-center mb-3"><i
+                                class="fas fa-book"></i></div>
+                        <div class="media-body px-3">
+                            <h3 class="heading">Buku Tamu Digital</h3>
+                            <p>Mencatat data kunjungan tamu secara elektronik, sehingga lebih rapi, mudah ditelusuri,
+                                dan mendukung keamanan serta dokumentasi kunjungan.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-self-stretch ftco-animate fadeInUp ftco-animated">
+                    <div class="media block-6 services p-3 py-4 d-block text-center">
+                        <div class="icon d-flex justify-content-center align-items-center mb-3"><i
+                                class="fas fa-calendar-plus"></i></div>
+                        <div class="media-body px-3">
+                            <h3 class="heading">Cuti Tahunan Tambahan Pegawai</h3>
+                            <p>mempermudah pegawai dalam mengajukan cuti secara online serta memudahkan proses
+                                persetujuan oleh atasan secara sistematis.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex align-self-stretch ftco-animate fadeInUp ftco-animated">
+                    <div class="media block-6 services p-3 py-4 d-block text-center">
+                        <div class="icon d-flex justify-content-center align-items-center mb-3"><i
+                                class="fas fa-chart-line"></i></div>
+                        <div class="media-body px-3">
+                            <h3 class="heading">Dashboard Pemenuhan Dokumen WBK-WBBM</h3>
+                            <p>Sebagai alat monitoring kelengkapan dokumen secara terpusat, sehingga memudahkan
+                                pengawasan, evaluasi, dan memastikan seluruh persyaratan terpenuhi secara tepat waktu.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="ftco-section bg-light">
         <div class="container">
             <div class="row align-items-center">
