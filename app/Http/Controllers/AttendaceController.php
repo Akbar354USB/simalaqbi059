@@ -10,9 +10,11 @@ use App\Models\WorkShift;
 use App\Services\GeoService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Holiday;
 
 class AttendaceController extends Controller
 {
@@ -400,5 +402,465 @@ class AttendaceController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    // public function cetakkalender(Request $request)
+    // {
+    //     if (!$request->month) {
+    //         return back()->with('error', 'Pilih bulan terlebih dahulu');
+    //     }
+
+    //     [$year, $month] = explode('-', $request->month);
+
+    //     $daysInMonth = Carbon::create($year, $month)->daysInMonth;
+
+    //     // ✅ weekend
+    //     $weekends = [];
+    //     for ($i = 1; $i <= $daysInMonth; $i++) {
+    //         if (Carbon::create($year, $month, $i)->isWeekend()) {
+    //             $weekends[$i] = true;
+    //         }
+    //     }
+
+    //     // ✅ mapping status
+    //     $statusMap = [
+    //         'ON_TIME' => 'H',
+    //         'TERLAMBAT' => 'TL',
+    //         'LEBIH AWAL' => 'PSW',
+    //         'CUTI TAHUNAN' => 'CT',
+    //         'CUTI SETENGAH HARI' => 'CSH',
+    //         'DINAS LUAR' => 'DL',
+    //         'CUTI SAKIT' => 'CS',
+    //     ];
+
+    //     // ✅ prioritas
+    //     $priority = ['PSW', 'TL', 'H', 'CT', 'CSH', 'DL', 'CS'];
+
+    //     $workStatuses = ['H', 'TL', 'PSW'];
+
+    //     $query = Employee::whereHas('attendances', function ($q) use ($month, $year) {
+    //         $q->whereMonth('attendance_date', $month)
+    //             ->whereYear('attendance_date', $year);
+    //     })->where('status', 'PPNPN');
+
+    //     if ($request->employee_id) {
+    //         $query->where('id', $request->employee_id);
+    //     }
+
+    //     $employees = $query->with([
+    //         'attendances.workShift',
+    //         'attendances' => function ($q) use ($month, $year, $request) {
+    //             $q->whereMonth('attendance_date', $month)
+    //                 ->whereYear('attendance_date', $year);
+
+    //             if ($request->work_shift_id) {
+    //                 $q->where('work_shift_id', $request->work_shift_id);
+    //             }
+    //         }
+    //     ])->get();
+
+    //     $data = [];
+
+    //     foreach ($employees as $emp) {
+
+    //         $calendar = array_fill(1, $daysInMonth, []);
+    //         $hadirDays = [];
+
+    //         $rekap = [
+    //             'H' => 0,
+    //             'TL' => 0,
+    //             'PSW' => 0,
+    //             'CT' => 0,
+    //             'CSH' => 0,
+    //             'DL' => 0,
+    //             'CS' => 0,
+    //         ];
+
+    //         foreach ($emp->attendances as $att) {
+
+    //             $startDate = Carbon::parse($att->attendance_date);
+
+    //             // =========================
+    //             // ✅ STATUS
+    //             // =========================
+    //             $inRaw = $att->check_in_status ? strtoupper(trim($att->check_in_status)) : null;
+    //             $inStatus = $statusMap[$inRaw] ?? null;
+
+    //             $outStatus = ($att->check_out_status == 'LEBIH AWAL') ? 'PSW' : null;
+
+    //             // =========================
+    //             // ✅ SPAN SHIFT
+    //             // =========================
+    //             $span = ($att->workShift && (
+    //                 in_array($inStatus, $workStatuses) || $outStatus
+    //             ))
+    //                 ? ($att->workShift->day_span ?? 0)
+    //                 : 0;
+
+    //             // =========================
+    //             // ✅ LOOP HARI
+    //             // =========================
+    //             for ($d = 0; $d <= $span; $d++) {
+
+    //                 $currentDate = $startDate->copy()->addDays($d);
+
+    //                 if ($currentDate->month != $month) continue;
+
+    //                 $day = $currentDate->day;
+
+    //                 if ($inStatus) {
+    //                     $calendar[$day][] = $inStatus;
+    //                 }
+
+    //                 if ($outStatus) {
+    //                     $calendar[$day][] = $outStatus;
+    //                 }
+
+    //                 if (
+    //                     in_array($inStatus, ['H', 'TL', 'CSH']) || // ✅ tambah CSH
+    //                     $outStatus === 'PSW'
+    //                 ) {
+    //                     $hadirDays[$day] = true;
+    //                 }
+    //             }
+
+    //             // =========================
+    //             // ✅ REKAP
+    //             // =========================
+    //             if ($inStatus && isset($rekap[$inStatus])) {
+    //                 $rekap[$inStatus]++;
+    //             }
+
+    //             if ($outStatus) {
+    //                 $rekap['PSW']++;
+    //             }
+    //         }
+
+    //         // =========================
+    //         // ✅ FINAL CELL (UPDATED)
+    //         // =========================
+    //         for ($i = 1; $i <= $daysInMonth; $i++) {
+
+    //             if (empty($calendar[$i])) {
+    //                 $calendar[$i] = '-';
+    //                 continue;
+    //             }
+
+    //             // 🔥 hapus duplikat
+    //             $statuses = array_unique($calendar[$i]);
+
+    //             // 🔥 sort prioritas
+    //             usort($statuses, function ($a, $b) use ($priority) {
+    //                 return array_search($a, $priority) - array_search($b, $priority);
+    //             });
+
+    //             // 🔥 jika ada PSW + TL tampilkan keduanya
+    //             if (in_array('PSW', $statuses) && in_array('TL', $statuses)) {
+    //                 $calendar[$i] = 'TL/PSW';
+    //             } else {
+    //                 $calendar[$i] = $statuses[0];
+    //             }
+    //         }
+
+    //         $hadir = count($hadirDays);
+
+    //         $data[] = [
+    //             'name' => $emp->employee_name,
+    //             'calendar' => $calendar,
+    //             'hadir' => $hadir,
+    //             'rekap' => $rekap
+    //         ];
+    //     }
+
+    //     $pdf = Pdf::loadView('attendance.kalender', compact(
+    //         'data',
+    //         'daysInMonth',
+    //         'month',
+    //         'year',
+    //         'weekends'
+    //     ))->setPaper('A4', 'landscape');
+
+    //     return $pdf->stream('absensi.pdf');
+    // }
+
+    public function cetakkalender(Request $request)
+    {
+        if (!$request->month) {
+            return back()->with('error', 'Pilih bulan terlebih dahulu');
+        }
+
+        [$year, $month] = explode('-', $request->month);
+
+        $daysInMonth = Carbon::create($year, $month)->daysInMonth;
+        // =========================
+        // ✅ AMBIL HARI LIBUR
+        // =========================
+        $holidays = Holiday::where(function ($q) use ($month, $year) {
+            $q->whereMonth('start_date', $month)
+                ->whereYear('start_date', $year)
+                ->orWhere(function ($q2) use ($month, $year) {
+                    $q2->whereNotNull('end_date')
+                        ->whereMonth('end_date', $month)
+                        ->whereYear('end_date', $year);
+                });
+        })->get();
+
+        // 🔥 mapping tanggal libur
+        $holidayDates = [];
+        $holidayLabels = [];
+
+        foreach ($holidays as $h) {
+
+            $start = \Carbon\Carbon::parse($h->start_date);
+            $end = $h->end_date
+                ? \Carbon\Carbon::parse($h->end_date)
+                : $start;
+
+            for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+
+                if ($date->month != $month) continue;
+
+                $day = $date->day;
+
+                $holidayDates[$day] = true;
+
+                // simpan nama libur (bisa lebih dari satu)
+                $holidayLabels[$day][] = $h->name;
+            }
+        }
+
+        // ✅ weekend
+        $weekends = [];
+        for ($i = 1; $i <= $daysInMonth; $i++) {
+            if (Carbon::create($year, $month, $i)->isWeekend()) {
+                $weekends[$i] = true;
+            }
+        }
+
+        // ✅ mapping status
+        $statusMap = [
+            'ON_TIME' => 'H',
+            'TERLAMBAT' => 'TL',
+            'LEBIH AWAL' => 'PSW',
+            'CUTI TAHUNAN' => 'CT',
+            'CUTI SETENGAH HARI' => 'CSH',
+            'DINAS LUAR' => 'DL',
+            'CUTI SAKIT' => 'CS',
+        ];
+
+        // ✅ prioritas
+        $priority = ['PSW', 'TL', 'H', 'CT', 'CSH', 'DL', 'CS'];
+
+        $workStatuses = ['H', 'TL', 'PSW'];
+
+        $query = Employee::whereHas('attendances', function ($q) use ($month, $year) {
+            $q->whereMonth('attendance_date', $month)
+                ->whereYear('attendance_date', $year);
+        })->where('status', 'PPNPN');
+
+        if ($request->employee_id) {
+            $query->where('id', $request->employee_id);
+        }
+
+        $employees = $query->with([
+            'attendances.workShift',
+            'attendances' => function ($q) use ($month, $year, $request) {
+                $q->whereMonth('attendance_date', $month)
+                    ->whereYear('attendance_date', $year);
+
+                if ($request->work_shift_id) {
+                    $q->where('work_shift_id', $request->work_shift_id);
+                }
+            }
+        ])->get();
+
+        $data = [];
+
+        foreach ($employees as $emp) {
+
+            $calendar = array_fill(1, $daysInMonth, []);
+            $hadirDays = [];
+
+            $rekap = [
+                'H' => 0,
+                'TL' => 0,
+                'PSW' => 0,
+                'CT' => 0,
+                'CSH' => 0,
+                'DL' => 0,
+                'CS' => 0,
+            ];
+
+            foreach ($emp->attendances as $att) {
+
+                $startDate = Carbon::parse($att->attendance_date);
+
+                // =========================
+                // ✅ STATUS
+                // =========================
+                $inRaw = $att->check_in_status ? strtoupper(trim($att->check_in_status)) : null;
+                $inStatus = $statusMap[$inRaw] ?? null;
+
+                $outStatus = ($att->check_out_status == 'LEBIH AWAL') ? 'PSW' : null;
+
+                // =========================
+                // ✅ SPAN SHIFT
+                // =========================
+                $span = ($att->workShift && (
+                    in_array($inStatus, $workStatuses) || $outStatus
+                ))
+                    ? ($att->workShift->day_span ?? 0)
+                    : 0;
+
+                // =========================
+                // ✅ LOOP HARI
+                // =========================
+                for ($d = 0; $d <= $span; $d++) {
+
+                    $currentDate = $startDate->copy()->addDays($d);
+
+                    if ($currentDate->month != $month) continue;
+
+                    $day = $currentDate->day;
+
+                    if ($inStatus) {
+                        $calendar[$day][] = $inStatus;
+                    }
+
+                    if ($outStatus) {
+                        $calendar[$day][] = $outStatus;
+                    }
+
+                    if (
+                        in_array($inStatus, ['H', 'TL', 'CSH']) || // ✅ tambah CSH
+                        $outStatus === 'PSW'
+                    ) {
+                        $hadirDays[$day] = true;
+                    }
+                }
+
+                // =========================
+                // ✅ REKAP
+                // =========================
+                if ($inStatus && isset($rekap[$inStatus])) {
+                    $rekap[$inStatus]++;
+                }
+
+                if ($outStatus) {
+                    $rekap['PSW']++;
+                }
+            }
+
+            // =========================
+            // ✅ FINAL CELL (UPDATED)
+            // =========================
+            for ($i = 1; $i <= $daysInMonth; $i++) {
+
+                if (empty($calendar[$i])) {
+                    $calendar[$i] = '-';
+                    continue;
+                }
+
+                // 🔥 hapus duplikat
+                $statuses = array_unique($calendar[$i]);
+
+                // 🔥 sort prioritas
+                usort($statuses, function ($a, $b) use ($priority) {
+                    return array_search($a, $priority) - array_search($b, $priority);
+                });
+
+                // 🔥 jika ada PSW + TL tampilkan keduanya
+                if (in_array('PSW', $statuses) && in_array('TL', $statuses)) {
+                    $calendar[$i] = 'TL/PSW';
+                } else {
+                    $calendar[$i] = $statuses[0];
+                }
+            }
+
+            $hadir = count($hadirDays);
+
+            $data[] = [
+                'name' => $emp->employee_name,
+                'calendar' => $calendar,
+                'hadir' => $hadir,
+                'rekap' => $rekap
+            ];
+        }
+
+        $pdf = Pdf::loadView('attendance.kalender', compact(
+            'data',
+            'daysInMonth',
+            'month',
+            'year',
+            'weekends',
+            'holidayDates',   // 🔥 tambahan
+            'holidayLabels',   // 🔥 tambahan
+            'holidays' // 🔥 TAMBAHAN INI
+        ))->setPaper('A4', 'landscape');
+
+        return $pdf->stream('absensi.pdf');
+    }
+
+    public function storeManual(Request $request)
+    {
+        $request->validate([
+            'employee_id'     => 'required|exists:employees,id',
+            'attendance_date' => 'required|date',
+            'work_shift_id'   => 'required|exists:work_shifts,id', // ✅ tambah ini
+            'status'          => 'required|string',
+        ]);
+
+        // ✅ cek duplikasi (karena ada unique constraint)
+        $exists = \App\Models\Attendance::where('employee_id', $request->employee_id)
+            ->where('attendance_date', $request->attendance_date)
+            ->where('work_shift_id', $request->work_shift_id)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'message' => 'Data sudah ada untuk tanggal & shift ini'
+            ], 400);
+        }
+
+        \App\Models\Attendance::create([
+            'employee_id'     => $request->employee_id,
+            'attendance_date' => $request->attendance_date,
+            'work_shift_id'   => $request->work_shift_id,
+
+            // status manual
+            'check_in_status' => $request->status,
+
+            // default kosong
+            'check_in_time'  => null,
+            'check_out_time' => null,
+            'check_out_status' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Kehadiran manual berhasil ditambahkan'
+        ]);
+    }
+
+    public function updateInline(Request $request, $id)
+    {
+        $attendance = Attendance::findOrFail($id);
+
+        $attendance->update([
+            'check_in_time' => $request->check_in_time
+                ? date('Y-m-d H:i:s', strtotime($attendance->attendance_date . ' ' . $request->check_in_time))
+                : null,
+
+            'check_out_time' => $request->check_out_time
+                ? date('Y-m-d H:i:s', strtotime($attendance->attendance_date . ' ' . $request->check_out_time))
+                : null,
+
+            'check_in_status' => $request->check_in_status,
+            'check_out_status' => $request->check_out_status,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil diupdate'
+        ]);
     }
 }

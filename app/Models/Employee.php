@@ -84,4 +84,9 @@ class Employee extends Model
     {
         return $this->hasOne(WorkUnit::class, 'employee_id');
     }
+
+    public function targets()
+    {
+        return $this->hasMany(SurveyTarget::class);
+    }
 }

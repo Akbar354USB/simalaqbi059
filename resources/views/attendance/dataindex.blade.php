@@ -110,6 +110,13 @@
                                 <i class="ti ti-file-text fs-3"></i>
                             </a>
 
+                            {{-- PDF KALENDER --}}
+                            <a href="{{ request('month') ? route('attendances.cetak_kalendar', request()->query()) : '#' }}"
+                                class="btn btn-warning d-flex align-items-center justify-content-center {{ !request('month') ? 'disabled' : '' }}"
+                                style="width:45px; height:45px;" target="_blank" title="Cetak PDF Kalender">
+                                <i class="ti ti-calendar fs-3"></i>
+                            </a>
+
                             <a href="{{ route('attendances.export.csv') }}"
                                 class="btn btn-success d-flex align-items-center justify-content-center"
                                 style="width:45px; height:45px;" target="_blank" title="Cetak CSV">
@@ -133,6 +140,11 @@
                         🗑 Hapus Semua
                     </button>
                 </form>
+
+                {{-- input kehadiran manual --}}
+                <button type="button" class="btn btn-primary mb-2" id="btn-manual">
+                    + Input Kehadiran Manual
+                </button>
 
                 {{-- TABLE --}}
                 <div class="table-responsive">
@@ -261,6 +273,16 @@
 
                                     {{-- AKSI --}}
                                     <td>
+                                        {{-- EDIT --}}
+                                        <button type="button" class="btn btn-warning btn-edit"
+                                            data-id="{{ $attendance->id }}"
+                                            data-checkin="{{ $attendance->check_in_time }}"
+                                            data-checkout="{{ $attendance->check_out_time }}"
+                                            data-statusin="{{ $attendance->check_in_status }}"
+                                            data-statusout="{{ $attendance->check_out_status }}">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
                                         <form action="{{ route('attendances.destroy', $attendance->id) }}" method="POST"
                                             class="d-inline delete-form">
                                             @csrf
@@ -348,6 +370,185 @@
                 if (result.isConfirmed) {
                     form.submit();
                 }
+            });
+        });
+    </script>
+    <script>
+        document.getElementById('btn-manual').addEventListener('click', function() {
+
+            Swal.fire({
+                title: 'Input Kehadiran Manual',
+                width: '600px', // ✅ diperbesar biar lega
+                html: `
+                <div style="display:flex; flex-direction:column; gap:10px;">
+
+                    <select id="employee_id" class="swal2-input">
+                        <option value="">-- Pilih Pegawai --</option>
+                        @foreach ($employees as $emp)
+                            <option value="{{ $emp->id }}">{{ $emp->employee_name }}</option>
+                        @endforeach
+                    </select>
+
+                    <input type="date" id="attendance_date" class="swal2-input">
+
+                    <select id="work_shift_id" class="swal2-input">
+                        <option value="">-- Pilih Shift --</option>
+                        @foreach ($workShifts as $shift)
+                            <option value="{{ $shift->id }}">
+                                {{ $shift->shift_name }} 
+                                ({{ $shift->start_time }} - {{ $shift->end_time }})
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <select id="status" class="swal2-input">
+                        <option value="">-- Pilih Status --</option>
+                        <option value="CUTI TAHUNAN">CT (Cuti Tahunan)</option>
+                        <option value="CUTI SETENGAH HARI">CSH (Cuti Setengah Hari)</option>
+                        <option value="DINAS LUAR">DL (Dinas Luar)</option>
+                        <option value="CUTI SAKIT">CS (Cuti Sakit)</option>
+                    </select>
+
+                </div>
+            `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+
+                preConfirm: () => {
+                    const employee_id = document.getElementById('employee_id').value;
+                    const attendance_date = document.getElementById('attendance_date').value;
+                    const work_shift_id = document.getElementById('work_shift_id').value;
+                    const status = document.getElementById('status').value;
+
+                    if (!employee_id || !attendance_date || !work_shift_id || !status) {
+                        Swal.showValidationMessage('Semua field wajib diisi!');
+                        return false;
+                    }
+
+                    return {
+                        employee_id,
+                        attendance_date,
+                        work_shift_id,
+                        status,
+                    }
+                }
+            }).then((result) => {
+
+                if (result.isConfirmed) {
+
+                    fetch("{{ route('attendances.manual.store') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                            },
+                            body: JSON.stringify(result.value)
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.fire('Berhasil', data.message, 'success')
+                                .then(() => location.reload());
+                        })
+                        .catch(err => {
+                            Swal.fire('Error', 'Gagal menyimpan data', 'error');
+                        });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.querySelectorAll('.btn-edit').forEach(button => {
+            button.addEventListener('click', function() {
+
+                const id = this.dataset.id;
+                const checkin = this.dataset.checkin ?? '';
+                const checkout = this.dataset.checkout ?? '';
+                const statusin = this.dataset.statusin ?? '';
+                const statusout = this.dataset.statusout ?? '';
+
+                Swal.fire({
+                    title: 'Edit Absensi',
+                    width: '420px', // 🔽 diperkecil
+                    html: `
+                <div style="display:flex; flex-direction:column; gap:10px; text-align:left; font-size:13px;">
+
+                    <div>
+                        <div style="margin-bottom:3px; font-weight:600;">Jam Datang</div>
+                        <input type="time" id="check_in_time"
+                            style="width:100%; padding:6px 8px; font-size:13px; border:1px solid #ccc; border-radius:6px;"
+                            value="${checkin ? checkin.substring(11,19) : ''}">
+                    </div>
+
+                    <div>
+                        <div style="margin-bottom:3px; font-weight:600;">Status Datang</div>
+                        <select id="check_in_status"
+                            style="width:100%; padding:6px 8px; font-size:13px; border:1px solid #ccc; border-radius:6px;">
+                            <option value="">-- Pilih Status --</option>
+                            <option value="ON_TIME" ${statusin === 'ON_TIME' ? 'selected' : ''}>ON TIME</option>
+                            <option value="TERLAMBAT" ${statusin === 'TERLAMBAT' ? 'selected' : ''}>TERLAMBAT</option>
+                            <option value="CUTI SETENGAH HARI" ${statusin === 'CUTI SETENGAH HARI' ? 'selected' : ''}>
+                                CUTI SETENGAH HARI (CSH)
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div style="margin-bottom:3px; font-weight:600;">Jam Pulang</div>
+                        <input type="time" id="check_out_time"
+                            style="width:100%; padding:6px 8px; font-size:13px; border:1px solid #ccc; border-radius:6px;"
+                            value="${checkout ? checkout.substring(11,19) : ''}">
+                    </div>
+
+                    <div>
+                        <div style="margin-bottom:3px; font-weight:600;">Status Pulang</div>
+                        <select id="check_out_status"
+                            style="width:100%; padding:6px 8px; font-size:13px; border:1px solid #ccc; border-radius:6px;">
+                            <option value="">-- Pilih Status --</option>
+                            <option value="ON_TIME" ${statusout === 'ON_TIME' ? 'selected' : ''}>ON TIME</option>
+                            <option value="LEBIH AWAL" ${statusout === 'LEBIH AWAL' ? 'selected' : ''}>LEBIH AWAL</option>
+                        </select>
+                    </div>
+
+                </div>
+            `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Update',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonText: 'Batal',
+
+                    preConfirm: () => {
+                        return {
+                            check_in_time: document.getElementById('check_in_time').value,
+                            check_in_status: document.getElementById('check_in_status').value,
+                            check_out_time: document.getElementById('check_out_time').value,
+                            check_out_status: document.getElementById('check_out_status').value
+                        }
+                    }
+
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+
+                        fetch(`/attendances/${id}/update-inline`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                                },
+                                body: JSON.stringify(result.value)
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                Swal.fire('Berhasil', data.message, 'success')
+                                    .then(() => location.reload());
+                            })
+                            .catch(err => {
+                                Swal.fire('Error', 'Gagal update data', 'error');
+                            });
+                    }
+                });
             });
         });
     </script>

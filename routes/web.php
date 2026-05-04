@@ -26,8 +26,11 @@ use App\Http\Controllers\HeadOfficeApprovalController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\UnitHeadApprovalController;
 use App\Http\Controllers\OvertimeRequestV2Controller;
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\PublicSurveyController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Http\Controllers\HolidayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +61,47 @@ Route::post('/lokasi', function (Request $request) {
         'longitude' => $lon
     ]);
 });
+
+// Route::get('/surveys', [SurveyController::class, 'index'])->name('surveys.index');
+// Route::get('/surveys/{id}', [SurveyController::class, 'form'])->name('surveys.form');
+// Route::post('/surveys/{id}', [SurveyController::class, 'submit'])->name('surveys.submit');
+// Route::get('/surveys/{id}/result', [SurveyController::class, 'result'])->name('surveys.result');
+
+Route::get('/admin/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
+Route::post('/admin/surveys/store', [SurveyController::class, 'storeSurvey'])->name('surveys.store');
+Route::post('/admin/surveys/target', [SurveyController::class, 'storeTarget'])->name('surveys.target');
+Route::post('/admin/surveys/question', [SurveyController::class, 'storeQuestion'])->name('surveys.question');
+
+Route::put('/surveys/{id}', [SurveyController::class, 'updateSurvey'])->name('surveys.update');
+Route::put('/surveys/target/{id}', [SurveyController::class, 'updateTarget'])
+    ->name('surveys.target.update');
+Route::delete('/surveys/{id}', [SurveyController::class, 'destroyTarget'])->name('Targetsurveys.destroy');
+Route::delete('/questions/{id}', [SurveyController::class, 'destroyQuestion'])
+    ->name('questions.destroy');
+
+Route::get('/survey/pns', [PublicSurveyController::class, 'pns']);
+Route::get('/survey/ppnpn', [PublicSurveyController::class, 'ppnpn']);
+Route::post('/survey/submit', [PublicSurveyController::class, 'submit'])
+    ->name('survey.submit');
+
+Route::get('/survey/result', [PublicSurveyController::class, 'index'])
+    ->name('survey.result.all');
+
+
+Route::get('/cetak-absensi', [AttendaceController::class, 'cetakkalender'])->name('attendances.cetak_kalendar');
+Route::post('/attendances/manual', [AttendaceController::class, 'storeManual'])
+    ->name('attendances.manual.store');
+Route::post('/attendances/{id}/update-inline', [AttendaceController::class, 'updateInline'])
+    ->name('attendances.updateInline');
+
+// holiday
+Route::get('/holiday/index', [HolidayController::class, 'index'])->name('holidays.index');
+Route::get('/holiday/create', [HolidayController::class, 'create'])->name('holidays.create');
+Route::post('holiday/store', [HolidayController::class, 'store'])->name('holidays.store');
+Route::put('holiday/update/{id}', [HolidayController::class, 'update'])->name('holidays.update');
+Route::delete('/holiday/delete/{id}', [HolidayController::class, 'destroy'])->name('holidays.delete');
+
+
 
 Route::get('/overtime_v2', [OvertimeRequestV2Controller::class, 'index'])->name('overtime_v2.index');
 Route::get('/overtime_v2/create', [OvertimeRequestV2Controller::class, 'create'])->name('overtime_v2.create');

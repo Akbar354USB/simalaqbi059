@@ -29,6 +29,60 @@
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
     @yield('css')
+    <style>
+        #globalLoader {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 999999999;
+
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #globalLoader.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ddd;
+            border-top: 5px solid #0d6efd;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loader-logo {
+            width: 80px;
+            height: auto;
+            animation: pulseLogo 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pulseLogo {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.7;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
 
 </head>
 <!-- [Head] end -->
@@ -36,7 +90,13 @@
 
 <body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="light">
     <!-- [ Pre-loader ] start -->
-    <div class="loader-bg">
+    {{-- <div class="loader-bg">
+        <div class="loader-track">
+            <div class="loader-fill"></div>
+        </div>
+    </div> --}}
+
+    <div class="loader-bg d-none" id="mantisLoader">
         <div class="loader-track">
             <div class="loader-fill"></div>
         </div>
@@ -59,6 +119,22 @@
         </div>
     </div>
     <!-- [ Main Content ] end -->
+
+    <!-- 🔥 WAJIB DI SINI -->
+    {{-- <div id="globalLoader">
+        <div class="spinner"></div>
+    </div> --}}
+
+    {{-- <div id="globalLoader"
+        style="display:none; justify-content:center; align-items:center; position:fixed; inset:0; background:rgba(255,255,255,0.9); z-index:999999;"> --}}
+    <div id="globalLoader"
+        style="justify-content:center; align-items:center; position:fixed; inset:0; background:rgba(255,255,255,0.9); z-index:999999;">
+        <div class="text-center">
+            <img src="{{ asset('backend/logosmlb.png') }}" alt="Loading..." class="loader-logo">
+            <div style="margin-top:10px;">Memuat halaman...</div>
+        </div>
+
+    </div>
 
     <!-- footer -->
     @include('backend.partial.footer')
@@ -122,6 +198,53 @@
                 .catch(error => console.log("Session refresh gagal"));
         }, 300000); // 5 menit
     </script>
+
+    <script>
+        function showLoader() {
+            document.getElementById('globalLoader')?.classList.add('active');
+        }
+
+        function hideLoader() {
+            document.getElementById('globalLoader')?.classList.remove('active');
+        }
+
+        window.addEventListener('load', function() {
+            hideLoader();
+        });
+
+        let isLoading = false;
+
+        document.addEventListener('mousedown', function(e) {
+            let link = e.target.closest('a');
+
+            if (!link) return;
+
+            let href = link.getAttribute('href');
+
+            if (
+                !href ||
+                href.startsWith('#') ||
+                link.hasAttribute('data-bs-toggle') ||
+                link.getAttribute('target') === '_blank'
+            ) return;
+
+            if (isLoading) return;
+            isLoading = true;
+
+            e.preventDefault();
+
+            showLoader();
+
+            setTimeout(() => {
+                window.location.href = href;
+            }, 200);
+        });
+
+        document.addEventListener('submit', function() {
+            showLoader();
+        });
+    </script>
+
 </body>
 <!-- [Body] end -->
 
